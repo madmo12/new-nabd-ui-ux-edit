@@ -20,10 +20,6 @@ const DashboardFooter = () => {
                <span className="hover:text-[#0070CD] cursor-pointer transition-colors">Privacy protocol</span>
                <span className="hover:text-[#0070CD] cursor-pointer transition-colors">Terms of access</span>
             </div>
-            <div className="px-3 py-1.5 bg-slate-900 text-white rounded-lg flex items-center gap-2 shadow-xl shadow-slate-900/10">
-               <FaTerminal className="text-[#0070CD] text-[8px]" />
-               <span className="text-[9px] tracking-[0.3em]">BUILD v4.0.2 Stable</span>
-            </div>
           </div>
         </div>
       </div>

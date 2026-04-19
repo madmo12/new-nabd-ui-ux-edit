@@ -140,16 +140,16 @@ const AppointmentsPage = () => {
 
   return (
     <div className="min-h-screen bg-[#F8FAFC]">
-      {/* 1. Page Header */}
-      <div className="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-[0_2px_20px_-5px_rgba(0,0,0,0.05)]">
-        <div className="max-w-7xl mx-auto px-6 lg:px-8 py-8">
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+      {/* 1. Page Header - Natural Scrolling Behavior */}
+      <div className="bg-white border-b border-slate-200 shadow-sm relative z-10">
+        <div className="max-w-7xl mx-auto px-6 lg:px-8 py-10">
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
             <div className="space-y-2">
               <div className="flex items-center gap-3 text-[#0070CD] mb-2 font-black tracking-widest text-xs uppercase">
                 <div className="w-2 h-2 rounded-full bg-[#0070CD] animate-pulse shadow-[0_0_8px_rgba(0,112,205,0.6)]"></div>
                 <span>سجل المواعيد الطبية</span>
               </div>
-              <h1 className="text-3xl lg:text-4xl font-black text-[#0F172A] tracking-tight leading-none">
+              <h1 className="text-3xl lg:text-4xl font-black text-[#0F172A] tracking-tight leading-tight">
                 مواعيدي <span className="text-[#0070CD]">الطبية</span>
               </h1>
               <p className="text-[#64748B] font-medium text-base mt-3">
@@ -159,17 +159,17 @@ const AppointmentsPage = () => {
 
             {/* Smart Sliding Tabs */}
             <div className="relative flex p-1.5 bg-slate-100 rounded-2xl shadow-inner w-full md:w-auto h-[60px] md:h-auto">
+              {/* Sliding Background Indicator */}
               <div
-                className={`absolute top-1.5 bottom-1.5 w-[calc(50%-6px)] bg-white rounded-xl shadow-sm border border-slate-200/50 transition-all duration-500 ease-out z-0
-                 ${activeTab === 'past' ? 'translate-x-0 left-1.5' : 'translate-x-[calc(-100%-6px)] left-1.5'}`}
-                style={{ direction: 'ltr' }}
+                className={`absolute top-1.5 bottom-1.5 w-[calc(50%-1.5px)] bg-white rounded-xl shadow-md border border-slate-200/50 transition-all duration-500 ease-out z-0
+                 ${activeTab === 'upcoming' ? 'translate-x-0 right-1.5' : '-translate-x-full right-1.5'}`}
               />
 
               <button
                 onClick={() => setActiveTab('upcoming')}
                 className={`relative flex-1 md:flex-initial flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-bold text-sm transition-colors duration-300 z-10 w-1/2 md:w-auto ${activeTab === 'upcoming'
-                    ? 'text-[#0070CD]'
-                    : 'text-[#64748B] hover:text-[#0F172A]'
+                  ? 'text-[#0070CD]'
+                  : 'text-[#64748B] hover:text-[#0F172A]'
                   }`}
               >
                 <FaCalendarCheck className={activeTab === 'upcoming' ? 'text-[#0070CD]' : 'text-slate-400'} />
@@ -181,8 +181,8 @@ const AppointmentsPage = () => {
               <button
                 onClick={() => setActiveTab('past')}
                 className={`relative flex-1 md:flex-initial flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-bold text-sm transition-colors duration-300 z-10 w-1/2 md:w-auto ${activeTab === 'past'
-                    ? 'text-[#0070CD]'
-                    : 'text-[#64748B] hover:text-[#0F172A]'
+                  ? 'text-[#0070CD]'
+                  : 'text-[#64748B] hover:text-[#0F172A]'
                   }`}
               >
                 <FaHistory className={activeTab === 'past' ? 'text-[#0070CD]' : 'text-slate-400'} />
