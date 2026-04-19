@@ -1,0 +1,8 @@
+# Placeholder for Arabic Normalizer Model
+
+Place `ArabicNormalizerModel.onnx` here when ready.
+
+This model will:
+- Accept raw Arabic/English symptoms text
+- Return normalized symptom keywords
+- Be loaded once at application startup

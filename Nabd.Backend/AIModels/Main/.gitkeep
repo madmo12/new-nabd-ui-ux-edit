@@ -1,0 +1,8 @@
+# Placeholder for Main Diagnosis Model
+
+Place `MainDiagnosisModel.onnx` here when ready.
+
+This model will:
+- Accept normalized symptoms as input
+- Return medical diagnosis as output
+- Be loaded once at application startup
