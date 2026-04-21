@@ -9,7 +9,7 @@ export const loginSchema = yup.object().shape({
     .required('البريد الإلكتروني مطلوب'),
   password: yup
     .string()
-    .min(6, 'كلمة المرور يجب أن تكون 6 أحرف على الأقل')
+    .min(8, 'كلمة المرور مطلوبة')
     .required('كلمة المرور مطلوبة'),
 });
 

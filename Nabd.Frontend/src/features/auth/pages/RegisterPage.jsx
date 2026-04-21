@@ -1,3 +1,4 @@
+// src/features/auth/pages/RegisterPage.jsx
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
@@ -6,23 +7,19 @@ import * as yup from 'yup';
 import {
   User,
   Stethoscope,
-
   Check,
   Eye,
   EyeOff,
-  ShieldCheck,
-  Activity,
-  Languages,
-  ChevronRight,
   AlertCircle,
-  Lock
+  Lock,
+  Mail,
+  CheckCircle2,
+  Loader2,
+  ArrowRight
 } from 'lucide-react';
 import authService from '@/api/services/auth.service';
 import { SPECIALTIES } from '@/utils/constants';
-import DoctorRegisterImg from '@/assets/DoctorRegister.jpg';
-import PatientRegisterImg from '@/assets/PatientRegister.jpg';
-
-import LogoIcon from '@/assets/LogoIcon.png';
+import NavbarLogo from '@/features/patient/components/navbar/NavbarLogo';
 import GoogleLoginButton from '../components/GoogleLoginButton';
 
 // Validation Schemas
@@ -39,7 +36,6 @@ const doctorSchema = patientSchema.shape({
   medicalSpecialty: yup
     .number()
     .transform((value, originalValue) => {
-      // If empty string, return undefined to trigger required validation
       return originalValue === '' ? undefined : value;
     })
     .typeError('يرجى اختيار التخصص الطبي من القائمة')
@@ -47,54 +43,7 @@ const doctorSchema = patientSchema.shape({
     .required('التخصص الطبي مطلوب'),
 });
 
-
-
-// Translation Dictionary
-const translations = {
-  ar: {
-    brandName: 'شُريان',
-    brandSlogan: 'نبض الرعاية الصحية',
-    welcomeTitle: 'انضم إلى شبكتنا',
-    welcomeSubtitle: 'تواصل مع أفضل نظام رعاية صحية في مصر.',
-    types: {
-      patient: 'مريض',
-      doctor: 'طبيب',
-
-    },
-    fields: {
-      firstName: 'الاسم الأول',
-      lastName: 'اسم العائلة',
-
-      email: 'البريد الإلكتروني',
-      password: 'كلمة المرور',
-      confirmPassword: 'تأكيد كلمة المرور',
-      specialty: 'التخصص الطبي',
-      specialtyPlaceholder: 'اختر التخصص',
-      terms: 'أوافق على الشروط وسياسة الخصوصية'
-    },
-    placeholders: {
-      email: 'name@example.com',
-
-    },
-    passwordStrength: ['ضعيف', 'مقبول', 'جيد', 'قوي', 'ممتاز'],
-    buttons: {
-      submit: 'إنشاء حساب',
-      submitting: 'جارِ المعالجة...',
-      login: 'لديك حساب بالفعل؟ تسجيل الدخول'
-    },
-    messages: {
-      verificationDoc: 'ملاحظة: سيتم التحقق من الترخيص خلال ٣-٥ أيام عمل.',
-
-      instantAccess: 'احصل على وصول فوري للوحة التحكم الصحية.',
-      successTitle: 'تم التسجيل بنجاح!',
-      successBody: 'مرحبًا بك في شُريان. يرجى التحقق من بريدك الإلكتروني لتفعيل الحساب.',
-      successVerified: 'سيتم تحويلك إلى صفحة التحقق...'
-    }
-  }
-};
-
 const RegisterPage = () => {
-  const [lang] = useState('ar');
   const [userType, setUserType] = useState('patient');
   const [showPassword, setShowPassword] = useState(false);
   const [passwordStrength, setPasswordStrength] = useState(0);
@@ -103,14 +52,10 @@ const RegisterPage = () => {
   const [error, setError] = useState('');
 
   const navigate = useNavigate();
-  const t = translations[lang];
-  const isRTL = lang === 'ar';
 
-  // Get schema based on user type
   const getSchema = () => {
     switch (userType) {
       case 'doctor': return doctorSchema;
-
       default: return patientSchema;
     }
   };
@@ -118,15 +63,20 @@ const RegisterPage = () => {
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isValid, isDirty },
     reset,
     watch,
   } = useForm({
     resolver: yupResolver(getSchema()),
-    mode: 'onBlur',
+    mode: 'onChange',
   });
 
   const password = watch('password', '');
+  const confirmPassword = watch('confirmPassword', '');
+  const termsChecked = watch('terms', false);
+
+  const isMatch = confirmPassword && password === confirmPassword;
+  const isMismatch = confirmPassword && password !== confirmPassword;
 
   // Password strength calculation
   useEffect(() => {
@@ -139,10 +89,33 @@ const RegisterPage = () => {
     setPasswordStrength(Math.min(strength, 4));
   }, [password]);
 
+  const getStrengthColor = (level) => {
+    if (!password) return 'bg-slate-200';
+    if (passwordStrength > level) {
+      if (passwordStrength <= 1) return 'bg-rose-400';
+      if (passwordStrength === 2) return 'bg-yellow-400';
+      if (passwordStrength === 3) return 'bg-emerald-400';
+      return 'bg-emerald-500';
+    }
+    return 'bg-slate-200';
+  };
+
+  const getStrengthLabel = () => {
+    if (!password) return '';
+    if (passwordStrength <= 1) return { text: 'ضعيف', color: 'text-rose-500' };
+    if (passwordStrength === 2) return { text: 'مقبول', color: 'text-yellow-500' };
+    if (passwordStrength === 3) return { text: 'جيد', color: 'text-emerald-500' };
+    return { text: 'قوي جداً', color: 'text-emerald-600' };
+  };
+
+  const strengthData = getStrengthLabel();
+
   const handleUserTypeChange = (type) => {
-    setUserType(type);
-    reset();
-    setError('');
+    if (userType !== type) {
+      setUserType(type);
+      reset();
+      setError('');
+    }
   };
 
   const onSubmit = async (data) => {
@@ -151,7 +124,6 @@ const RegisterPage = () => {
 
     try {
       let response;
-
       switch (userType) {
         case 'patient':
           response = await authService.registerPatient(data);
@@ -159,7 +131,6 @@ const RegisterPage = () => {
         case 'doctor':
           response = await authService.registerDoctor(data);
           break;
-
         default:
           throw new Error('نوع مستخدم غير صحيح');
       }
@@ -184,19 +155,18 @@ const RegisterPage = () => {
     }
   };
 
-  // Success Screen
   if (isSuccess) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-50 p-4" dir={isRTL ? 'rtl' : 'ltr'}>
-        <div className="bg-white p-8 rounded-3xl shadow-xl max-w-md w-full text-center space-y-6 border-t-4 border-teal-500 animate-in fade-in zoom-in duration-300">
-          <div className="w-20 h-20 bg-teal-100 rounded-full flex items-center justify-center mx-auto mb-4">
-            <Check size={40} className="text-teal-600" />
+      <div className="min-h-screen flex items-center justify-center bg-slate-50 p-4 font-sans" dir="rtl">
+        <div className="bg-white p-10 rounded-[2rem] shadow-xl max-w-md w-full text-center space-y-6 border-t-[5px] border-[#0070CD] animate-in fade-in zoom-in duration-300">
+          <div className="w-24 h-24 bg-emerald-50 rounded-full flex items-center justify-center mx-auto mb-6 shadow-inner border border-emerald-100">
+            <Check size={48} className="text-emerald-500" />
           </div>
-          <h2 className="text-3xl font-bold text-slate-800">{t.messages.successTitle}</h2>
-          <p className="text-slate-600 leading-relaxed">
-            {(userType === 'doctor')
-              ? t.messages.successVerified
-              : t.messages.successBody}
+          <h2 className="text-3xl font-black text-slate-800 tracking-tight">تم التسجيل بنجاح!</h2>
+          <p className="text-slate-600 font-medium leading-relaxed text-lg">
+            {userType === 'doctor'
+              ? 'مرحباً بك في منصة نبض. سيتم تحويلك لصفحة التحقق...'
+              : 'مرحباً بك في منصة نبض. يرجى التحقق من بريدك الإلكتروني لتفعيل الحساب.'}
           </p>
         </div>
       </div>
@@ -204,257 +174,327 @@ const RegisterPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4 lg:p-8" dir={isRTL ? 'rtl' : 'ltr'}>
-      {/* Main Container */}
-      <div className="bg-white rounded-[2rem] shadow-2xl w-full max-w-6xl overflow-hidden flex flex-col lg:flex-row-reverse min-h-[700px]">
-
-        {/* Right Side: Welcome Section with Image (All Types) */}
-        {(userType === 'doctor' || userType === 'patient') && (
-          <div className="hidden lg:flex lg:w-1/2 relative bg-slate-900 overflow-hidden rounded-r-[2rem]" dir="ltr">
-            {/* Background Image with Gradient Overlay */}
-            <div className="absolute inset-0">
-              <img
-                src={
-                  userType === 'doctor' ? DoctorRegisterImg :
-                    PatientRegisterImg
-                }
-                alt={
-                  userType === 'doctor' ? 'Doctor' :
-                    'Patient'
-                }
-                className="w-full h-full object-cover"
-              />
-              <div className="absolute inset-0 bg-gradient-to-r from-slate-900/80 to-teal-900/40 mix-blend-multiply" />
-            </div>
-
-            {/* Content */}
-            <div className="relative z-10 flex flex-col justify-between p-10 text-white w-full text-left">
-
-
-              {/* Main Content */}
-              <div className="space-y-6 translate-y-15">
-                <h1 className="text-4xl lg:text-5xl font-black leading-tight" style={{ textShadow: '2px 4px 12px rgba(0,0,0,0.4)' }}>
-                  {userType === 'doctor'
-                    ? <><span className="text-teal-400">The Digital Bloodline</span><br />of Healthcare.</>
-                    : <><span className="text-teal-400">Your Health Journey</span><br />Starts Here.</>}
-                </h1>
-                <p className="text-slate-200 text-lg leading-relaxed max-w-md font-medium" style={{ textShadow: '1px 2px 8px rgba(0,0,0,0.5)' }}>
-                  Join Egypt's most trusted healthcare network. Secure, efficient, and dedicated to your well-being.
-                </p>
-              </div>
-
-              {/* Badges */}
-              <div className="flex gap-4">
-                <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-lg border border-white/20">
-                  <ShieldCheck size={20} className="text-teal-400" />
-                  <span className="text-sm font-medium">HIPAA Compliant</span>
-                </div>
-                <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-lg border border-white/20">
-                  <Check size={20} className="text-teal-400" />
-                  <span className="text-sm font-medium">Verified Network</span>
-                </div>
-              </div>
-
-              {/* Footer Text */}
-              <p className="text-slate-400 text-xs" style={{ textShadow: '1px 1px 4px rgba(0,0,0,0.6)' }}>
-                © 2025 Nabd Healthcare Platform. All rights reserved.
-              </p>
-            </div>
-          </div>
-        )}
-
-        {/* Left Side: Registration Form */}
-        <div className="lg:w-1/2 w-full p-6 lg:p-12 bg-white relative overflow-y-auto">
-
-          {/* Header Actions */}
-          <div className="flex justify-between items-center mb-8">
-            <h3 className="text-2xl font-bold text-slate-800 hidden lg:block">{t.welcomeTitle}</h3>
-            {/* Helper Message / Verification Notice */}
-            <div className="bg-slate-50 p-3 rounded-lg flex items-start gap-3 text-xs text-slate-500 border border-slate-100">
-              <ShieldCheck className="shrink-0 text-teal-500" size={16} />
-              <p>
-                {userType === 'patient'
-                  ? t.messages.instantAccess
-                  : t.messages.verificationDoc}
-              </p>
-            </div>
-            <span className="lg:hidden text-xl font-bold text-slate-800">{t.brandName}</span>
+    <div className="min-h-screen flex flex-col-reverse lg:flex-row bg-white font-sans" dir="rtl">
+      
+      {/* FORM SECTION (Visual Right in RTL, Bottom on Mobile) */}
+      <div className="w-full lg:w-1/2 flex items-start justify-center p-6 lg:p-12 bg-white relative overflow-y-auto max-h-screen pb-16 custom-scrollbar">
+        
+        <div className="w-full max-w-[440px] pt-4 lg:pt-10">
+          
+          <div className="mb-8 text-right">
+            <h2 className="text-2xl lg:text-3xl font-bold text-slate-800 tracking-tight mb-2">إنشاء حساب جديد</h2>
+            <p className="text-slate-500 font-medium text-base">اختر نوع الحساب وأدخل بياناتك للبدء</p>
           </div>
 
-          {/* Error Alert */}
+          {/* Alerts */}
           {error && (
-            <div className="mb-6 bg-red-50 border border-red-200 rounded-xl p-4 flex items-start gap-3">
-              <AlertCircle className="text-red-500 shrink-0 mt-0.5" size={18} />
-              <p className="text-sm text-red-700">{error}</p>
+            <div className="mb-6 bg-rose-50/80 border border-rose-100 rounded-xl p-3 flex items-start gap-2.5 shadow-sm animate-in fade-in slide-in-from-top-2 duration-300">
+              <AlertCircle className="text-rose-500 shrink-0 mt-0.5" size={18} />
+              <p className="text-sm text-rose-800 font-bold leading-relaxed">{error}</p>
             </div>
           )}
 
-          {/* User Type Selection (Tabs) */}
-          <div className="grid grid-cols-2 gap-2 mb-8 p-1.5 bg-slate-50/80 rounded-2xl border border-slate-200/60 shadow-sm">
-            {[
-              { id: 'patient', icon: User, label: t.types.patient },
-              { id: 'doctor', icon: Stethoscope, label: t.types.doctor }
-            ].map((type) => (
-              <button
-                key={type.id}
-                type="button"
-                onClick={() => handleUserTypeChange(type.id)}
-                className={`
-                  flex flex-col items-center justify-center py-3 rounded-xl transition-all duration-300 text-sm
-                  ${userType === type.id ? 'bg-white shadow-lg border border-teal-100 text-teal-600 font-bold scale-[1.02]' : 'text-slate-500 hover:bg-white/50 border border-transparent'}
-                `}
-              >
-                <type.icon size={20} className={`mb-1 ${userType === type.id ? 'text-teal-500' : 'text-slate-400'}`} />
-                <span className="text-[10px] sm:text-xs truncate w-full px-1">{type.label}</span>
-              </button>
-            ))}
-          </div>
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
 
-          {/* Dynamic Form */}
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
-
-            {/* Name Fields Logic */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div className="space-y-1">
-                <label className="text-sm font-semibold text-slate-700">{t.fields.firstName} <span className="text-rose-500">*</span></label>
-                <input
-                  type="text"
-                  {...register('firstName')}
-                  className={`w-full px-4 py-3.5 rounded-xl border-2 ${errors.firstName ? 'border-rose-300 focus:ring-rose-100 focus:border-rose-400' : 'border-slate-200/80 focus:ring-teal-50 focus:border-teal-400'} focus:outline-none focus:ring-4 transition-all bg-white hover:border-slate-300`}
-                />
-                {errors.firstName && <p className="text-xs text-rose-500 flex items-center gap-1 mt-1"><AlertCircle size={10} /> {errors.firstName.message}</p>}
-              </div>
-              <div className="space-y-1">
-                <label className="text-sm font-semibold text-slate-700">{t.fields.lastName} <span className="text-rose-500">*</span></label>
-                <input
-                  type="text"
-                  {...register('lastName')}
-                  className={`w-full px-4 py-3.5 rounded-xl border-2 ${errors.lastName ? 'border-rose-300 focus:ring-rose-100 focus:border-rose-400' : 'border-slate-200/80 focus:ring-teal-50 focus:border-teal-400'} focus:outline-none focus:ring-4 transition-all bg-white hover:border-slate-300`}
-                />
-                {errors.lastName && <p className="text-xs text-rose-500 flex items-center gap-1 mt-1"><AlertCircle size={10} /> {errors.lastName.message}</p>}
-              </div>
-            </div>
-
-            {/* Specialty Dropdown (Doctor Only) */}
-            {userType === 'doctor' && (
-              <div className="space-y-1 animate-in slide-in-from-top-2 fade-in">
-                <label className="text-sm font-semibold text-slate-700">{t.fields.specialty} <span className="text-rose-500">*</span></label>
-                <select
-                  {...register('medicalSpecialty')}
-                  className={`w-full px-4 py-3.5 rounded-xl border-2 ${errors.medicalSpecialty ? 'border-rose-300 focus:border-rose-400' : 'border-slate-200/80 focus:border-teal-400'} focus:ring-4 focus:ring-teal-50 focus:outline-none bg-white hover:border-slate-300 transition-all`}
-                >
-                  <option value="">{t.fields.specialtyPlaceholder}</option>
-                  {SPECIALTIES.map(s => <option key={s.value} value={s.value}>{s.label}</option>)}
-                </select>
-                {errors.medicalSpecialty && <p className="text-xs text-rose-500 flex items-center gap-1 mt-1"><AlertCircle size={10} /> {errors.medicalSpecialty.message}</p>}
-              </div>
-            )}
-
-            {/* Email Field */}
-            <div className="space-y-1">
-              <label className="text-sm font-semibold text-slate-700">{t.fields.email} <span className="text-rose-500">*</span></label>
-              <input
-                type="email"
-                {...register('email')}
-                placeholder={t.placeholders.email}
-                className={`w-full px-4 py-3.5 rounded-xl border-2 ${errors.email ? 'border-rose-300 focus:ring-rose-100 focus:border-rose-400' : 'border-slate-200/80 focus:ring-teal-50 focus:border-teal-400'} focus:outline-none focus:ring-4 transition-all bg-white hover:border-slate-300`}
+            {/* GROUP 1: Account Type Selector */}
+            <div className="relative flex bg-slate-100/80 p-1 rounded-xl shadow-inner">
+              {/* Sliding Background Pill */}
+              <div 
+                className={`absolute top-1 bottom-1 w-[calc(50%-4px)] right-1 bg-white rounded-lg shadow-[0_2px_8px_rgba(0,0,0,0.08)] transition-transform duration-300 ease-in-out ${
+                  userType === 'doctor' ? '-translate-x-full' : 'translate-x-0'
+                }`}
               />
-              {errors.email && <p className="text-xs text-rose-500 flex items-center gap-1 mt-1"><AlertCircle size={10} /> {errors.email.message}</p>}
+              
+              <button
+                type="button"
+                onClick={() => handleUserTypeChange('patient')}
+                className={`relative flex-1 flex items-center justify-center gap-2 py-3 z-10 font-bold text-sm transition-colors duration-300 ${
+                  userType === 'patient' ? 'text-[#0070CD]' : 'text-slate-500 hover:text-slate-700 hover:bg-slate-200/30 rounded-lg'
+                }`}
+              >
+                <User size={18} className={`transition-colors duration-300 ${userType === 'patient' ? 'text-[#0070CD]' : 'text-slate-400'}`} />
+                مريض
+              </button>
+              
+              <button
+                type="button"
+                onClick={() => handleUserTypeChange('doctor')}
+                className={`relative flex-1 flex items-center justify-center gap-2 py-3 z-10 font-bold text-sm transition-colors duration-300 ${
+                  userType === 'doctor' ? 'text-[#0070CD]' : 'text-slate-500 hover:text-slate-700 hover:bg-slate-200/30 rounded-lg'
+                }`}
+              >
+                <Stethoscope size={18} className={`transition-colors duration-300 ${userType === 'doctor' ? 'text-[#0070CD]' : 'text-slate-400'}`} />
+                طبيب
+              </button>
             </div>
 
-            {/* Password Fields */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-1">
-                <label className="text-sm font-semibold text-slate-700">{t.fields.password} <span className="text-rose-500">*</span></label>
-                <div className="relative">
+            {/* GROUP 2: Personal Info */}
+            <div className="space-y-3.5">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                <div className="space-y-1.5">
+                  <label className="text-sm font-bold text-slate-700 block">الاسم الأول <span className="text-rose-500">*</span></label>
+                  <input
+                    type="text"
+                    placeholder="أدخل الاسم الأول"
+                    {...register('firstName')}
+                    className={`w-full px-4 py-3.5 bg-slate-50 hover:bg-slate-100/80 focus:bg-white border-2 ${
+                      errors.firstName ? 'border-rose-300 focus:border-rose-500 focus:ring-rose-500/20' : 'border-slate-100 focus:border-[#0070CD] focus:ring-[#0070CD]/20'
+                    } rounded-xl text-sm focus:outline-none focus:ring-4 transition-all duration-300 font-medium text-slate-800`}
+                  />
+                  {errors.firstName && <p className="text-xs text-rose-500 flex items-center gap-1 mt-1 font-bold"><AlertCircle size={12} /> {errors.firstName.message}</p>}
+                </div>
+                <div className="space-y-1.5">
+                  <label className="text-sm font-bold text-slate-700 block">اسم العائلة <span className="text-rose-500">*</span></label>
+                  <input
+                    type="text"
+                    placeholder="أدخل اسم العائلة"
+                    {...register('lastName')}
+                    className={`w-full px-4 py-3.5 bg-slate-50 hover:bg-slate-100/80 focus:bg-white border-2 ${
+                      errors.lastName ? 'border-rose-300 focus:border-rose-500 focus:ring-rose-500/20' : 'border-slate-100 focus:border-[#0070CD] focus:ring-[#0070CD]/20'
+                    } rounded-xl text-sm focus:outline-none focus:ring-4 transition-all duration-300 font-medium text-slate-800`}
+                  />
+                  {errors.lastName && <p className="text-xs text-rose-500 flex items-center gap-1 mt-1 font-bold"><AlertCircle size={12} /> {errors.lastName.message}</p>}
+                </div>
+              </div>
+
+              {/* Animated Specialty Dropdown (Doctor Only) */}
+              <div className={`transition-all duration-500 ease-in-out overflow-hidden ${userType === 'doctor' ? 'max-h-32 opacity-100 mt-3.5' : 'max-h-0 opacity-0 m-0'}`}>
+                <div className="space-y-1.5 pb-1">
+                  <label className="text-sm font-bold text-slate-700 block">التخصص الطبي <span className="text-rose-500">*</span></label>
+                  <div className="relative group">
+                    <div className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-[#0070CD] transition-colors pointer-events-none">
+                      <Stethoscope size={18} />
+                    </div>
+                    <select
+                      {...register('medicalSpecialty')}
+                      className={`w-full pr-11 pl-4 py-3.5 bg-slate-50 hover:bg-slate-100/80 focus:bg-white border-2 ${
+                        errors.medicalSpecialty ? 'border-rose-300 focus:border-rose-500 focus:ring-rose-500/20' : 'border-slate-100 focus:border-[#0070CD] focus:ring-[#0070CD]/20'
+                      } rounded-xl text-sm focus:outline-none focus:ring-4 transition-all duration-300 font-medium text-slate-800 appearance-none cursor-pointer`}
+                    >
+                      <option value="">اختر التخصص الطبي</option>
+                      {SPECIALTIES.map(s => <option key={s.value} value={s.value}>{s.label}</option>)}
+                    </select>
+                  </div>
+                  {errors.medicalSpecialty && <p className="text-xs text-rose-500 flex items-center gap-1 mt-1 font-bold"><AlertCircle size={12} /> {errors.medicalSpecialty.message}</p>}
+                </div>
+              </div>
+            </div>
+
+            {/* GROUP 3: Credentials */}
+            <div className="space-y-3.5">
+              <div className="space-y-1.5">
+                <label className="text-sm font-bold text-slate-700 block">البريد الإلكتروني <span className="text-rose-500">*</span></label>
+                <div className="relative group">
+                  <div className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-[#0070CD] transition-colors pointer-events-none">
+                    <Mail size={18} />
+                  </div>
+                  <input
+                    type="email"
+                    placeholder="name@example.com"
+                    {...register('email')}
+                    className={`w-full pr-11 pl-4 py-3.5 bg-slate-50 hover:bg-slate-100/80 focus:bg-white border-2 ${
+                      errors.email ? 'border-rose-300 focus:border-rose-500 focus:ring-rose-500/20' : 'border-slate-100 focus:border-[#0070CD] focus:ring-[#0070CD]/20'
+                    } rounded-xl text-sm focus:outline-none focus:ring-4 transition-all duration-300 font-medium text-slate-800`}
+                    dir="ltr"
+                  />
+                </div>
+                {errors.email && <p className="text-xs text-rose-500 flex items-center gap-1 mt-1 font-bold"><AlertCircle size={12} /> {errors.email.message}</p>}
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="text-sm font-bold text-slate-700 block">كلمة المرور <span className="text-rose-500">*</span></label>
+                <div className="relative group">
+                  <div className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-[#0070CD] transition-colors pointer-events-none">
+                    <Lock size={18} />
+                  </div>
                   <input
                     type={showPassword ? "text" : "password"}
+                    placeholder="أدخل كلمة المرور"
                     {...register('password')}
-                    className={`w-full px-4 py-3.5 rounded-xl border-2 ${errors.password ? 'border-rose-300 focus:border-rose-400' : 'border-slate-200/80 focus:border-teal-400'} focus:ring-4 focus:ring-teal-50 focus:outline-none bg-white hover:border-slate-300 transition-all`}
+                    className={`w-full pr-11 pl-12 py-3.5 bg-slate-50 hover:bg-slate-100/80 focus:bg-white border-2 ${
+                      errors.password ? 'border-rose-300 focus:border-rose-500 focus:ring-rose-500/20' : 'border-slate-100 focus:border-[#0070CD] focus:ring-[#0070CD]/20'
+                    } rounded-xl text-sm focus:outline-none focus:ring-4 transition-all duration-300 font-medium text-slate-800`}
+                    dir="rtl"
                   />
-                  <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 rtl:left-4 rtl:right-auto">
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute left-3 top-1/2 -translate-y-1/2 p-1.5 text-slate-400 hover:text-[#0070CD] hover:bg-blue-50 rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-slate-200"
+                  >
                     {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                   </button>
                 </div>
-                {/* Password Strength Indicator */}
-                <div className="flex gap-1 mt-2 h-1.5">
-                  {[0, 1, 2, 3].map((level) => (
-                    <div
-                      key={level}
-                      className={`flex-1 rounded-full transition-all duration-300 ${passwordStrength > level ?
-                        (passwordStrength < 2 ? 'bg-rose-400' : passwordStrength < 3 ? 'bg-yellow-400' : 'bg-green-500')
-                        : 'bg-slate-200'}`}
-                    />
-                  ))}
-                </div>
-                {password && <span className="text-[10px] text-slate-500 text-right block">{t.passwordStrength[passwordStrength]}</span>}
-                {errors.password && <p className="text-xs text-rose-500 flex items-center gap-1 mt-1"><AlertCircle size={10} /> {errors.password.message}</p>}
+                {/* Password Strength Meter */}
+                {password && (
+                  <div className="mt-1.5 animate-in fade-in duration-300">
+                    <div className="flex gap-1 h-1 mb-1">
+                      {[0, 1, 2, 3].map((level) => (
+                        <div key={level} className={`flex-1 rounded-full transition-all duration-500 ${getStrengthColor(level)}`} />
+                      ))}
+                    </div>
+                    <div className="flex justify-end">
+                      <span className={`text-[11px] font-bold ${strengthData.color}`}>{strengthData.text}</span>
+                    </div>
+                  </div>
+                )}
+                {errors.password && <p className="text-xs text-rose-500 flex items-center gap-1 mt-1 font-bold"><AlertCircle size={12} /> {errors.password.message}</p>}
               </div>
 
-              <div className="space-y-1">
-                <label className="text-sm font-semibold text-slate-700">{t.fields.confirmPassword} <span className="text-rose-500">*</span></label>
-                <input
-                  type="password"
-                  {...register('confirmPassword')}
-                  className={`w-full px-4 py-3.5 rounded-xl border-2 ${errors.confirmPassword ? 'border-rose-300 focus:border-rose-400' : 'border-slate-200/80 focus:border-teal-400'} focus:ring-4 focus:ring-teal-50 focus:outline-none bg-white hover:border-slate-300 transition-all`}
-                />
-                {errors.confirmPassword && <p className="text-xs text-rose-500 flex items-center gap-1 mt-1"><AlertCircle size={10} /> {errors.confirmPassword.message}</p>}
+              <div className="space-y-1.5">
+                <label className="text-sm font-bold text-slate-700 block">تأكيد كلمة المرور <span className="text-rose-500">*</span></label>
+                <div className="relative group">
+                  <div className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-[#0070CD] transition-colors pointer-events-none">
+                    <Lock size={18} />
+                  </div>
+                  <input
+                    type="password"
+                    placeholder="أعد إدخال كلمة المرور"
+                    {...register('confirmPassword')}
+                    className={`w-full pr-11 pl-11 py-3.5 bg-slate-50 hover:bg-slate-100/80 focus:bg-white border-2 ${
+                      isMatch ? 'border-emerald-400 focus:border-emerald-500 focus:ring-emerald-500/20 bg-emerald-50/30' :
+                      isMismatch || errors.confirmPassword ? 'border-rose-300 focus:border-rose-500 focus:ring-rose-500/20' : 
+                      'border-slate-100 focus:border-[#0070CD] focus:ring-[#0070CD]/20'
+                    } rounded-xl text-sm focus:outline-none focus:ring-4 transition-all duration-300 font-medium text-slate-800`}
+                    dir="rtl"
+                  />
+                  {isMatch && (
+                    <div className="absolute left-3.5 top-1/2 -translate-y-1/2 text-emerald-500 animate-in zoom-in duration-300">
+                      <CheckCircle2 size={18} />
+                    </div>
+                  )}
+                </div>
+                {errors.confirmPassword && <p className="text-xs text-rose-500 flex items-center gap-1 mt-1 font-bold"><AlertCircle size={12} /> {errors.confirmPassword.message}</p>}
               </div>
             </div>
 
-            {/* Terms */}
-            <label className="flex items-center gap-3 cursor-pointer group p-2 rounded-lg hover:bg-slate-50">
-              <div className="relative flex items-center">
-                <input
-                  type="checkbox"
-                  {...register('terms')}
-                  className="peer h-5 w-5 cursor-pointer appearance-none rounded-md border border-slate-300 transition-all checked:border-teal-500 checked:bg-teal-500"
-                />
-                <Check size={14} className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-white opacity-0 transition-opacity peer-checked:opacity-100" />
-              </div>
-              <span className={`text-sm ${errors.terms ? 'text-rose-500' : 'text-slate-600'} group-hover:text-slate-900 transition-colors`}>{t.fields.terms}</span>
-            </label>
+            {/* GROUP 4: Terms & Submit */}
+            <div className="pt-1">
+              <label className="flex items-start gap-2.5 cursor-pointer group mb-5 p-2.5 bg-slate-50 hover:bg-slate-100 rounded-xl transition-colors">
+                <div className="relative flex items-center mt-0.5">
+                  <input
+                    type="checkbox"
+                    {...register('terms')}
+                    className={`peer appearance-none w-4 h-4 border-2 ${errors.terms && !termsChecked ? 'border-rose-400' : 'border-slate-300'} rounded-md bg-white checked:bg-[#0070CD] checked:border-[#0070CD] hover:border-[#0070CD] transition-all duration-200 cursor-pointer shrink-0`}
+                  />
+                  <Check size={12} strokeWidth={3} className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-white opacity-0 peer-checked:opacity-100 pointer-events-none transition-opacity duration-200" />
+                </div>
+                <span className={`text-[13px] ${errors.terms && !termsChecked ? 'text-rose-500 font-bold' : 'text-slate-600 font-medium'} group-hover:text-slate-900 transition-colors leading-relaxed`}>
+                  أوافق على <Link to="/terms" className="text-[#0070CD] font-bold hover:underline" onClick={e => e.stopPropagation()}>شروط الخدمة</Link> و <Link to="/privacy" className="text-[#0070CD] font-bold hover:underline" onClick={e => e.stopPropagation()}>سياسة الخصوصية</Link> الخاصة بمنصة نبض.
+                </span>
+              </label>
 
-            {/* Submit Button */}
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              className="w-full bg-slate-900 hover:bg-teal-600 text-white font-bold py-4 rounded-xl shadow-lg hover:shadow-teal-500/30 transform transition-all active:scale-[0.98] disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-            >
-              {isSubmitting ? (
-                <>
-                  <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                  {t.buttons.submitting}
-                </>
-              ) : (
-                <>
-                  {t.buttons.submit}
-                  {isRTL ? <ChevronRight size={20} className="rotate-180" /> : <ChevronRight size={20} />}
-                </>
-              )}
-            </button>
+              <button
+                type="submit"
+                disabled={isSubmitting || (!isValid && isDirty) || !termsChecked}
+                className="w-full bg-gradient-to-r from-[#005ba6] to-[#0070CD] hover:from-[#004a8c] hover:to-[#005ba6] text-white font-bold py-3.5 px-6 rounded-xl shadow-[0_8px_20px_rgba(0,112,205,0.25)] hover:shadow-[0_12px_25px_rgba(0,112,205,0.35)] hover:-translate-y-0.5 transform transition-all duration-300 active:scale-[0.98] disabled:opacity-60 disabled:cursor-not-allowed disabled:transform-none flex items-center justify-center gap-2 text-base border border-white/10"
+              >
+                {isSubmitting ? (
+                  <>
+                    <Loader2 size={20} className="animate-spin" />
+                    <span>جاري الإنشاء...</span>
+                  </>
+                ) : (
+                  <span>إنشاء حساب</span>
+                )}
+              </button>
+            </div>
 
             {/* Divider */}
             <div className="relative my-6">
               <div className="absolute inset-0 flex items-center">
                 <div className="w-full border-t border-slate-200"></div>
               </div>
-              <div className="relative flex justify-center text-sm">
-                <span className="px-4 bg-white text-slate-500">أو</span>
+              <div className="relative flex justify-center text-xs">
+                <span className="px-3 bg-white text-slate-400 font-bold uppercase tracking-wider">أو المتابعة عبر</span>
               </div>
             </div>
 
             {/* Google Login Button */}
-            <GoogleLoginButton userType={userType} />
+            <div className="mb-5">
+              <div className="transform hover:-translate-y-0.5 transition-transform duration-300">
+                <GoogleLoginButton userType={userType} />
+              </div>
+            </div>
 
-            <div className="text-center flex justify-center mt-6">
-              <p className="text-sm text-slate-600 mb-2">لديك حساب بالفعل؟</p>
-              <Link to="/login" className="text-sm font-semibold text-teal-600 hover:text-teal-700 hover:underline">
-                تسجيل الدخول
-              </Link>
+            {/* Login Link */}
+            <div className="text-center">
+              <p className="text-sm text-slate-600 font-medium">
+                لديك حساب بالفعل؟{' '}
+                <Link to="/login" className="text-[#0070CD] font-black hover:text-[#004a8c] hover:underline underline-offset-4 transition-colors ml-1">
+                  تسجيل الدخول
+                </Link>
+              </p>
             </div>
 
           </form>
+        </div>
+      </div>
+
+      {/* BRANDING SECTION (Visual Left in RTL, Top on Mobile) */}
+      <div className="relative w-full lg:w-1/2 flex flex-col items-center justify-center p-6 lg:p-12 xl:p-16 overflow-hidden bg-[#0070CD] lg:min-h-screen">
+        
+        {/* Back to Home Navigation (Absolute Top Right) */}
+        <Link to="/" className="absolute top-6 right-6 lg:top-8 lg:right-8 z-20 inline-flex items-center gap-1.5 text-blue-200/80 hover:text-white transition-all duration-300 font-medium text-sm drop-shadow-sm group">
+          <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
+          <span>العودة للرئيسية</span>
+        </Link>
+
+        {/* Deep Layered Gradient & Glowing Effects */}
+        <div className="absolute inset-0 bg-gradient-to-br from-[#003B73] via-[#005ba6] to-[#0070CD] z-0"></div>
+        <div className="absolute top-0 right-0 w-full h-full opacity-40 mix-blend-overlay z-0" style={{ backgroundImage: 'radial-gradient(circle at top right, rgba(255,255,255,0.4) 0%, transparent 40%)' }}></div>
+        <div className="absolute -bottom-[20%] -left-[20%] w-[80%] h-[80%] bg-blue-400/20 rounded-full blur-[120px] animate-pulse hidden lg:block" style={{ animationDuration: '8s' }}></div>
+        <div className="absolute top-[10%] -right-[10%] w-[50%] h-[50%] bg-[#00A1FF]/20 rounded-full blur-[100px] animate-pulse hidden lg:block" style={{ animationDuration: '12s' }}></div>
+
+        {/* Floating Shapes for Visual Depth - Desktop Only */}
+        <div className="absolute top-[25%] right-[15%] w-24 h-24 bg-white/5 rounded-3xl rotate-12 backdrop-blur-sm border border-white/10 z-0 shadow-[0_0_40px_rgba(255,255,255,0.1)] hidden lg:block"></div>
+        <div className="absolute bottom-[30%] left-[10%] w-32 h-32 bg-white/5 rounded-full backdrop-blur-md border border-white/10 z-0 shadow-[0_0_60px_rgba(0,112,205,0.5)] hidden lg:block"></div>
+
+        {/* Content Container */}
+        <div className="relative z-10 flex flex-col items-center justify-center text-center w-full max-w-lg mx-auto space-y-8 mt-12 lg:mt-0">
+          
+          {/* Exact Navbar Logo in a floating premium glass pill */}
+          <div 
+            className="inline-flex bg-white p-3 pr-4 rounded-xl shadow-[0_12px_30px_rgba(0,0,0,0.1)] transform hover:scale-[1.02] transition-transform duration-300 cursor-pointer"
+            onClick={(e) => { e.preventDefault(); navigate('/'); }}
+            title="العودة للصفحة الرئيسية"
+          >
+            <div className="pointer-events-none scale-90 origin-center">
+              <NavbarLogo />
+            </div>
+          </div>
+
+          {/* Mobile Short Text */}
+          <p className="lg:hidden text-white font-bold text-base drop-shadow-sm">
+            انضم إلى شبكة نبض الطبية
+          </p>
+
+          {/* Desktop Headline & Copy & Bullets */}
+          <div className="hidden lg:flex flex-col items-center space-y-6">
+            <h1 className="text-3xl lg:text-4xl xl:text-5xl font-black text-white leading-tight tracking-tight drop-shadow-md">
+              ابدأ رحلتك الصحية <br/> <span className="text-blue-200">بثقة وأمان.</span>
+            </h1>
+            <p className="text-base lg:text-lg text-blue-100/90 font-medium leading-relaxed drop-shadow-sm max-w-md mx-auto">
+              انضم إلى النظام الطبي المتكامل الأفضل لإدارة سجلاتك وحجوزاتك الطبية بكل سهولة وموثوقية.
+            </p>
+
+            <div className="flex flex-col items-center gap-4 pt-4">
+              {[
+                { text: 'سهولة الاستخدام والوصول السريع' },
+                { text: 'سرعة في حجز المواعيد وإدارة الملفات' },
+                { text: 'أمان تام وموثوقية عالية لبياناتك' }
+              ].map((item, index) => (
+                <div key={index} className="flex items-center gap-3 bg-white/10 w-fit px-5 py-2.5 rounded-xl border border-white/10 backdrop-blur-md shadow-[0_4px_15px_rgba(0,0,0,0.05)] hover:bg-white/20 transition-colors">
+                  <CheckCircle2 className="text-emerald-400 shrink-0 w-5 h-5 drop-shadow-sm" />
+                  <span className="text-white font-bold text-sm tracking-wide">{item.text}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Footer info in branding section - Desktop Only */}
+        <div className="relative z-10 mt-auto pt-12 hidden lg:block">
+          <p className="text-blue-200/70 text-xs font-medium">© 2026 منصة نبض الطبية. جميع الحقوق محفوظة.</p>
         </div>
       </div>
 
