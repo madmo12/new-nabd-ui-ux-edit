@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Phone, Mail, MapPin, Clock, Send, CheckCircle, MessageCircle, Headphones } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import Header from './Header';
 import Footer from './Footer';
 
@@ -36,78 +37,106 @@ const ContactPage = () => {
     };
 
     return (
-        <div className="min-h-screen bg-[#FFFFFF] font-sans text-[#1F2E3C]" dir="rtl">
+        <div className="min-h-screen bg-[#F8FAFC] font-sans text-[#1F2E3C] overflow-hidden" dir="rtl">
             <Header />
             <main>
-                {/* Hero Section with Gradient */}
-                <div className="relative bg-gradient-to-br from-[#1C8B8F] via-[#14666A] to-[#1F2E3C] pt-32 pb-20 px-4 sm:px-6 lg:px-8 overflow-hidden">
-                    {/* Decorative Elements */}
-                    <div className="absolute top-0 left-0 w-72 h-72 bg-white/5 rounded-full blur-3xl"></div>
-                    <div className="absolute bottom-0 right-0 w-96 h-96 bg-[#1C8B8F]/20 rounded-full blur-3xl"></div>
+                {/* Hero Section with Modern Tech Gradient */}
+                <div className="relative bg-[#0B1423] pt-32 pb-32 px-4 sm:px-6 lg:px-8 overflow-hidden">
+                    {/* Abstract Blue Shapes */}
+                    <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-[#0070CD]/20 rounded-full blur-[120px] translate-x-1/3 -translate-y-1/3 pointer-events-none"></div>
+                    <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-[#3399FF]/10 rounded-full blur-[120px] -translate-x-1/3 translate-y-1/3 pointer-events-none"></div>
+                    <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-5 mix-blend-overlay"></div>
                     
                     <div className="max-w-7xl mx-auto relative z-10">
-                        <div className="text-center">
-                            <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full mb-6">
-                                <MessageCircle className="w-5 h-5 text-white" />
-                                <span className="text-white/90 text-sm font-medium">نحن هنا لمساعدتك</span>
+                        <motion.div 
+                            initial={{ opacity: 0, y: 30 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.8 }}
+                            className="text-center"
+                        >
+                            <div className="inline-flex items-center gap-2 bg-white/5 border border-white/10 backdrop-blur-md px-5 py-2.5 rounded-full mb-8 shadow-sm">
+                                <MessageCircle className="w-5 h-5 text-[#3399FF]" />
+                                <span className="text-white/90 text-sm font-bold tracking-wide">نحن هنا لخدمتك</span>
                             </div>
-                            <h1 className="text-5xl md:text-6xl font-black text-white mb-6">
-                                تواصل معنا
+                            <h1 className="text-5xl md:text-6xl lg:text-7xl font-black text-white mb-6 tracking-tight">
+                                تواصل مع  <span className="text-transparent bg-clip-text bg-gradient-to-l from-[#3399FF] to-[#0070CD]">فريق نبض</span>
                             </h1>
-                            <p className="text-xl text-white/90 max-w-2xl mx-auto leading-relaxed">
-                                فريقنا جاهز للإجابة على استفساراتك ومساعدتك في أي وقت
+                            <p className="text-xl text-blue-100/70 max-w-2xl mx-auto leading-relaxed font-medium">
+                                فريق الدعم الفني وخدمة العملاء جاهز للإجابة على جميع استفساراتك وتقديم المساعدة والمشورة على مدار الساعة.
                             </p>
-                        </div>
+                        </motion.div>
                     </div>
+                    
+                    <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-[#F8FAFC] to-transparent z-20"></div>
                 </div>
 
-                {/* Contact Cards Section */}
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-16 relative z-20 pb-20">
+                {/* Contact Interface Section */}
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-16 relative z-30 pb-24">
                     {/* Quick Contact Cards */}
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16">
-                        <div className="bg-white rounded-2xl shadow-xl p-6 border-2 border-[#E7ECEF] hover:border-[#1C8B8F]/30 hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 text-center">
-                            <div className="w-14 h-14 bg-gradient-to-br from-[#1C8B8F] to-[#14666A] rounded-2xl flex items-center justify-center mb-4 mx-auto">
+                        <motion.div 
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 0.2 }}
+                            className="bg-white rounded-3xl shadow-[0_10px_30px_-10px_rgba(0,112,205,0.1)] p-8 border border-white hover:border-[#0070CD]/20 hover:shadow-[0_20px_40px_-10px_rgba(0,112,205,0.15)] transition-all duration-300 hover:-translate-y-2 text-center group"
+                        >
+                            <div className="w-16 h-16 bg-gradient-to-br from-[#0070CD] to-[#005099] rounded-2xl flex items-center justify-center mb-6 mx-auto shadow-lg shadow-[#0070CD]/20 group-hover:scale-110 transition-transform">
                                 <Phone className="w-7 h-7 text-white" />
                             </div>
-                            <h3 className="text-lg font-bold text-[#1F2E3C] mb-2">اتصل بنا</h3>
-                            <p className="text-gray-600 text-sm mb-3">متاحون على مدار الساعة</p>
-                            <p className="text-[#1C8B8F] font-bold text-lg" dir="ltr">+20 111 222 3333</p>
-                        </div>
+                            <h3 className="text-xl font-bold text-[#1F2E3C] mb-2">الدعم الهاتفي</h3>
+                            <p className="text-slate-500 text-sm mb-4 font-medium">متاحون على مدار الساعة للرد السريع</p>
+                            <p className="text-[#0070CD] font-black text-xl" dir="ltr">+20 111 222 3333</p>
+                        </motion.div>
 
-                        <div className="bg-white rounded-2xl shadow-xl p-6 border-2 border-[#E7ECEF] hover:border-[#1C8B8F]/30 hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 text-center">
-                            <div className="w-14 h-14 bg-gradient-to-br from-[#1C8B8F] to-[#14666A] rounded-2xl flex items-center justify-center mb-4 mx-auto">
+                        <motion.div 
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 0.3 }}
+                            className="bg-white rounded-3xl shadow-[0_10px_30px_-10px_rgba(0,112,205,0.1)] p-8 border border-white hover:border-[#0070CD]/20 hover:shadow-[0_20px_40px_-10px_rgba(0,112,205,0.15)] transition-all duration-300 hover:-translate-y-2 text-center group"
+                        >
+                            <div className="w-16 h-16 bg-gradient-to-br from-[#0070CD] to-[#005099] rounded-2xl flex items-center justify-center mb-6 mx-auto shadow-lg shadow-[#0070CD]/20 group-hover:scale-110 transition-transform">
                                 <Mail className="w-7 h-7 text-white" />
                             </div>
-                            <h3 className="text-lg font-bold text-[#1F2E3C] mb-2">راسلنا</h3>
-                            <p className="text-gray-600 text-sm mb-3">سنرد خلال 24 ساعة</p>
-                            <p className="text-[#1C8B8F] font-bold text-base font-sans">support@nabd.com</p>
-                        </div>
+                            <h3 className="text-xl font-bold text-[#1F2E3C] mb-2">البريد الإلكتروني</h3>
+                            <p className="text-slate-500 text-sm mb-4 font-medium">المراسلات الرسمية والاستفسارات المفصلة</p>
+                            <p className="text-[#0070CD] font-bold text-lg font-sans">support@nabd.com</p>
+                        </motion.div>
 
-                        <div className="bg-white rounded-2xl shadow-xl p-6 border-2 border-[#E7ECEF] hover:border-[#1C8B8F]/30 hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 text-center">
-                            <div className="w-14 h-14 bg-gradient-to-br from-[#1C8B8F] to-[#14666A] rounded-2xl flex items-center justify-center mb-4 mx-auto">
+                        <motion.div 
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 0.4 }}
+                            className="bg-white rounded-3xl shadow-[0_10px_30px_-10px_rgba(0,112,205,0.1)] p-8 border border-white hover:border-[#0070CD]/20 hover:shadow-[0_20px_40px_-10px_rgba(0,112,205,0.15)] transition-all duration-300 hover:-translate-y-2 text-center group"
+                        >
+                            <div className="w-16 h-16 bg-gradient-to-br from-[#0070CD] to-[#005099] rounded-2xl flex items-center justify-center mb-6 mx-auto shadow-lg shadow-[#0070CD]/20 group-hover:scale-110 transition-transform">
                                 <Headphones className="w-7 h-7 text-white" />
                             </div>
-                            <h3 className="text-lg font-bold text-[#1F2E3C] mb-2">الدعم الفني</h3>
-                            <p className="text-gray-600 text-sm mb-3">مساعدة فورية</p>
-                            <p className="text-[#1C8B8F] font-bold text-base">دردشة مباشرة</p>
-                        </div>
+                            <h3 className="text-xl font-bold text-[#1F2E3C] mb-2">محادثة مباشرة</h3>
+                            <p className="text-slate-500 text-sm mb-4 font-medium">تواصل فوري مع أخصائيي الدعم</p>
+                            <p className="text-[#0070CD] font-bold text-lg">ابدأ الدردشة الآن</p>
+                        </motion.div>
                     </div>
 
-                    {/* Main Contact Section */}
-                    <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
-                        {/* Contact Form - Takes 3 columns */}
-                        <div className="lg:col-span-3">
-                            <div className="bg-white rounded-3xl shadow-2xl p-8 md:p-10 border-2 border-[#E7ECEF] hover:border-[#1C8B8F]/20 transition-colors duration-300">
-                                <div className="mb-8">
-                                    <h2 className="text-3xl font-black text-[#1F2E3C] mb-3">أرسل لنا رسالة</h2>
-                                    <p className="text-gray-600">املأ النموذج وسنتواصل معك في أقرب وقت</p>
+                    {/* Main Contact Form & Location */}
+                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
+                        {/* Contact Form - Takes 7 columns */}
+                        <motion.div 
+                            initial={{ opacity: 0, x: 50 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ duration: 0.6, delay: 0.2 }}
+                            className="lg:col-span-7"
+                        >
+                            <div className="bg-white rounded-[2.5rem] shadow-[0_15px_40px_-15px_rgba(0,112,205,0.15)] p-10 md:p-12 border border-slate-100">
+                                <div className="mb-10">
+                                    <h2 className="text-3xl font-black text-[#1F2E3C] mb-4">أرسل رسالة مباشرة</h2>
+                                    <p className="text-slate-500 font-medium">املأ النموذج أدناه بدقة، وسنحرص على الرد عليك في غضون 24 ساعة.</p>
                                 </div>
                                 
                                 <form onSubmit={handleSubmit} className="space-y-6">
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                         <div>
                                             <label htmlFor="name" className="block text-sm font-bold text-[#1F2E3C] mb-2">
-                                                الاسم بالكامل <span className="text-[#1C8B8F]">*</span>
+                                                الاسم الكامل <span className="text-red-500">*</span>
                                             </label>
                                             <input
                                                 type="text"
@@ -116,13 +145,13 @@ const ContactPage = () => {
                                                 required
                                                 value={formData.name}
                                                 onChange={handleChange}
-                                                className="w-full px-4 py-3.5 rounded-xl border-2 border-[#E7ECEF] hover:border-[#1C8B8F]/30 focus:border-[#1C8B8F] focus:ring-4 focus:ring-[#1C8B8F]/10 outline-none transition-all bg-gray-50 focus:bg-white"
-                                                placeholder="أدخل اسمك الكامل"
+                                                className="w-full px-5 py-4 rounded-2xl border-2 border-slate-100 placeholder:text-slate-400 hover:border-[#0070CD]/30 focus:border-[#0070CD] focus:ring-4 focus:ring-[#0070CD]/10 outline-none transition-all bg-slate-50/50 focus:bg-white"
+                                                placeholder="د. أحمد محمد"
                                             />
                                         </div>
                                         <div>
                                             <label htmlFor="email" className="block text-sm font-bold text-[#1F2E3C] mb-2">
-                                                البريد الإلكتروني <span className="text-[#1C8B8F]">*</span>
+                                                البريد الإلكتروني <span className="text-red-500">*</span>
                                             </label>
                                             <input
                                                 type="email"
@@ -131,15 +160,16 @@ const ContactPage = () => {
                                                 required
                                                 value={formData.email}
                                                 onChange={handleChange}
-                                                className="w-full px-4 py-3.5 rounded-xl border-2 border-[#E7ECEF] hover:border-[#1C8B8F]/30 focus:border-[#1C8B8F] focus:ring-4 focus:ring-[#1C8B8F]/10 outline-none transition-all bg-gray-50 focus:bg-white"
-                                                placeholder="example@email.com"
+                                                className="w-full px-5 py-4 rounded-2xl border-2 border-slate-100 placeholder:text-slate-400 hover:border-[#0070CD]/30 focus:border-[#0070CD] focus:ring-4 focus:ring-[#0070CD]/10 outline-none transition-all bg-slate-50/50 focus:bg-white text-left"
+                                                placeholder="ahmed@email.com"
+                                                dir="ltr"
                                             />
                                         </div>
                                     </div>
 
                                     <div>
                                         <label htmlFor="subject" className="block text-sm font-bold text-[#1F2E3C] mb-2">
-                                            الموضوع <span className="text-[#1C8B8F]">*</span>
+                                            موضوع الرسالة <span className="text-red-500">*</span>
                                         </label>
                                         <input
                                             type="text"
@@ -148,96 +178,111 @@ const ContactPage = () => {
                                             required
                                             value={formData.subject}
                                             onChange={handleChange}
-                                            className="w-full px-4 py-3.5 rounded-xl border-2 border-[#E7ECEF] hover:border-[#1C8B8F]/30 focus:border-[#1C8B8F] focus:ring-4 focus:ring-[#1C8B8F]/10 outline-none transition-all bg-gray-50 focus:bg-white"
-                                            placeholder="كيف يمكننا مساعدتك؟"
+                                            className="w-full px-5 py-4 rounded-2xl border-2 border-slate-100 placeholder:text-slate-400 hover:border-[#0070CD]/30 focus:border-[#0070CD] focus:ring-4 focus:ring-[#0070CD]/10 outline-none transition-all bg-slate-50/50 focus:bg-white"
+                                            placeholder="استفسار بخصوص إدارة العيادات..."
                                         />
                                     </div>
 
                                     <div>
                                         <label htmlFor="message" className="block text-sm font-bold text-[#1F2E3C] mb-2">
-                                            الرسالة <span className="text-[#1C8B8F]">*</span>
+                                            محتوى الرسالة <span className="text-red-500">*</span>
                                         </label>
                                         <textarea
                                             id="message"
                                             name="message"
                                             required
-                                            rows="6"
+                                            rows="5"
                                             value={formData.message}
                                             onChange={handleChange}
-                                            className="w-full px-4 py-3.5 rounded-xl border-2 border-[#E7ECEF] hover:border-[#1C8B8F]/30 focus:border-[#1C8B8F] focus:ring-4 focus:ring-[#1C8B8F]/10 outline-none transition-all resize-none bg-gray-50 focus:bg-white"
-                                            placeholder="اكتب رسالتك هنا..."
+                                            className="w-full px-5 py-4 rounded-2xl border-2 border-slate-100 placeholder:text-slate-400 hover:border-[#0070CD]/30 focus:border-[#0070CD] focus:ring-4 focus:ring-[#0070CD]/10 outline-none transition-all resize-none bg-slate-50/50 focus:bg-white leading-relaxed"
+                                            placeholder="نرجو كتابة كافة التفاصيل لمساعدتك بشكل أفضل..."
                                         ></textarea>
                                     </div>
 
-                                    <div className="flex items-center justify-between pt-4">
+                                    <div className="pt-4">
                                         <button
                                             type="submit"
                                             disabled={isSubmitting}
                                             className={`
-                                                flex items-center justify-center gap-2 px-8 py-4 rounded-xl font-bold text-white transition-all transform
+                                                w-full sm:w-auto flex items-center justify-center gap-3 px-10 py-4 rounded-2xl font-black text-white transition-all transform
                                                 ${isSubmitting 
-                                                    ? 'bg-gray-400 cursor-not-allowed' 
-                                                    : 'bg-gradient-to-r from-[#1C8B8F] to-[#14666A] hover:from-[#14666A] hover:to-[#1C8B8F] shadow-lg shadow-[#1C8B8F]/30 hover:shadow-xl hover:shadow-[#1C8B8F]/40 hover:-translate-y-0.5'
+                                                    ? 'bg-slate-300 cursor-not-allowed' 
+                                                    : 'bg-[#0070CD] hover:bg-[#005099] shadow-[0_10px_20px_rgba(0,112,205,0.3)] hover:-translate-y-1'
                                                 }
                                             `}
                                         >
                                             {isSubmitting ? (
                                                 <>
                                                     <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                                                    <span>جاري الإرسال...</span>
+                                                    <span>جاري إرسال الرسالة...</span>
                                                 </>
                                             ) : (
                                                 <>
-                                                    <span>إرسال الرسالة</span>
-                                                    <Send className="w-5 h-5" />
+                                                    <span>إرسال الطلب الآن</span>
+                                                    <Send className="w-5 h-5 rtl:rotate-180" />
                                                 </>
                                             )}
                                         </button>
 
-                                        {showSuccess && (
-                                            <div className="flex items-center gap-2 text-green-600 font-bold animate-fade-in bg-green-50 px-4 py-2 rounded-xl">
-                                                <CheckCircle className="w-5 h-5" />
-                                                <span>تم إرسال رسالتك بنجاح!</span>
-                                            </div>
-                                        )}
+                                        <AnimatePresence>
+                                            {showSuccess && (
+                                                <motion.div 
+                                                    initial={{ opacity: 0, y: 10 }}
+                                                    animate={{ opacity: 1, y: 0 }}
+                                                    exit={{ opacity: 0, y: -10 }}
+                                                    className="flex items-center gap-2 text-emerald-600 font-bold bg-emerald-50 px-5 py-4 rounded-2xl mt-4 border border-emerald-100"
+                                                >
+                                                    <CheckCircle className="w-5 h-5" />
+                                                    <span>شكراً لتواصلك! لقد استلمنا رسالتك وسنقوم بالرد قريباً.</span>
+                                                </motion.div>
+                                            )}
+                                        </AnimatePresence>
                                     </div>
                                 </form>
                             </div>
-                        </div>
+                        </motion.div>
 
-                        {/* Contact Info & Map - Takes 2 columns */}
-                        <div className="lg:col-span-2 space-y-6">
+                        {/* Contact Info & Map - Takes 5 columns */}
+                        <motion.div 
+                            initial={{ opacity: 0, x: -50 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ duration: 0.6, delay: 0.4 }}
+                            className="lg:col-span-5 space-y-6"
+                        >
                             {/* Contact Details Card */}
-                            <div className="bg-gradient-to-br from-[#1C8B8F] to-[#14666A] rounded-3xl shadow-2xl p-8 text-white">
-                                <h2 className="text-2xl font-black mb-6">معلومات التواصل</h2>
+                            <div className="bg-[#0070CD] bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] rounded-[2.5rem] shadow-2xl p-10 text-white relative overflow-hidden">
+                                <div className="absolute top-0 right-0 w-40 h-40 bg-white/10 rounded-full blur-2xl"></div>
                                 
-                                <div className="space-y-5">
-                                    <div className="flex items-start gap-4 bg-white/10 backdrop-blur-sm rounded-2xl p-4">
-                                        <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center flex-shrink-0">
-                                            <MapPin className="w-6 h-6" />
+                                <h2 className="text-3xl font-black mb-8 relative z-10">المقر الرئيسي</h2>
+                                
+                                <div className="space-y-6 relative z-10">
+                                    <div className="flex items-start gap-5">
+                                        <div className="w-14 h-14 bg-white/10 border border-white/20 backdrop-blur-md rounded-2xl flex items-center justify-center flex-shrink-0">
+                                            <MapPin className="w-7 h-7 text-white" />
                                         </div>
-                                        <div>
-                                            <h3 className="font-bold mb-1">العنوان</h3>
-                                            <p className="text-white/90 text-sm">القاهرة، مدينة نصر، شارع الطيران</p>
+                                        <div className="pt-1">
+                                            <h3 className="font-bold text-lg mb-1">الفرع الرئيسي للتطوير</h3>
+                                            <p className="text-blue-100 font-medium leading-relaxed">شارع التسعين الشمالي، التجمع الخامس<br/>القاهرة، جمهورية مصر العربية</p>
                                         </div>
                                     </div>
 
-                                    <div className="flex items-start gap-4 bg-white/10 backdrop-blur-sm rounded-2xl p-4">
-                                        <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center flex-shrink-0">
-                                            <Clock className="w-6 h-6" />
+                                    <div className="flex items-start gap-5">
+                                        <div className="w-14 h-14 bg-white/10 border border-white/20 backdrop-blur-md rounded-2xl flex items-center justify-center flex-shrink-0">
+                                            <Clock className="w-7 h-7 text-white" />
                                         </div>
-                                        <div>
-                                            <h3 className="font-bold mb-1">ساعات العمل</h3>
-                                            <p className="text-white/90 text-sm">السبت - الخميس</p>
-                                            <p className="text-white/90 text-sm">9:00 ص - 6:00 م</p>
+                                        <div className="pt-1">
+                                            <h3 className="font-bold text-lg mb-1">أوقات العمل الرسمية</h3>
+                                            <p className="text-blue-100 font-medium">السبت - الخميس</p>
+                                            <p className="text-blue-100 font-medium">من 9:00 صباحاً حتى 6:00 مساءً</p>
                                         </div>
                                     </div>
                                 </div>
                             </div>
 
                             {/* Map */}
-                            <div className="bg-white rounded-3xl shadow-2xl overflow-hidden border-2 border-[#E7ECEF] hover:border-[#1C8B8F]/30 transition-colors duration-300">
-                                <div className="h-80">
+                            <div className="bg-white rounded-[2.5rem] shadow-[0_15px_40px_-15px_rgba(0,112,205,0.15)] overflow-hidden border border-slate-100 p-2">
+                                <div className="h-64 rounded-[2rem] overflow-hidden relative group">
+                                    <div className="absolute inset-0 bg-[#0070CD]/10 group-hover:bg-transparent transition-colors z-10 pointer-events-none"></div>
                                     <iframe 
                                         src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d27628.676924040974!2d31.319737449999997!3d30.05948385!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x14583e5d7a876775%3A0x6e7220116094726d!2sNasr%20City%2C%20Cairo%20Governorate!5e0!3m2!1sen!2seg!4v1709647890000!5m2!1sen!2seg" 
                                         width="100%" 
@@ -247,10 +292,11 @@ const ContactPage = () => {
                                         loading="lazy" 
                                         referrerPolicy="no-referrer-when-downgrade"
                                         title="Nabd Location"
+                                        className="grayscale-[30%] group-hover:grayscale-0 transition-all duration-500"
                                     ></iframe>
                                 </div>
                             </div>
-                        </div>
+                        </motion.div>
                     </div>
                 </div>
             </main>

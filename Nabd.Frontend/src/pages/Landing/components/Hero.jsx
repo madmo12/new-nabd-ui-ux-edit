@@ -1,127 +1,221 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Sparkles, User, Stethoscope, Shield, Activity, Clock, Heart } from 'lucide-react';
+import { Sparkles, User, Stethoscope, Shield, Activity, Clock, Heart, ArrowLeft, Brain, FileText, Pill } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 const Hero = () => {
     const navigate = useNavigate();
+
+    const containerVariants = {
+        hidden: { opacity: 0 },
+        visible: {
+            opacity: 1,
+            transition: { staggerChildren: 0.15 }
+        }
+    };
+
+    const itemVariants = {
+        hidden: { y: 20, opacity: 0 },
+        visible: { y: 0, opacity: 1, transition: { duration: 0.6, ease: "easeOut" } }
+    };
+
     return (
         <section className="relative pt-32 pb-20 lg:pt-48 lg:pb-32 overflow-hidden bg-[#F8FAFC]">
-            {/* Professional Background Pattern */}
-            <div className="absolute inset-0 opacity-[0.03] pointer-events-none select-none"
-                style={{ backgroundImage: 'radial-gradient(#0D9488 1px, transparent 1px)', backgroundSize: '32px 32px' }}>
+            {/* Very sophisticated background gradients */}
+            <div className="absolute top-[-20%] right-[-10%] w-[60%] h-[70%] bg-[#0070CD]/5 rounded-[100%] blur-[120px] pointer-events-none"></div>
+            <div className="absolute bottom-[-10%] left-[-10%] w-[50%] h-[50%] bg-[#1a8cff]/10 rounded-[100%] blur-[120px] pointer-events-none"></div>
+
+            {/* Micro grid pattern for modern touch */}
+            <div className="absolute inset-0 opacity-[0.015] pointer-events-none select-none"
+                style={{ backgroundImage: 'radial-gradient(#005099 1px, transparent 1px)', backgroundSize: '24px 24px' }}>
             </div>
-            
-            {/* Sophisticated Glows */}
-            <div className="absolute top-0 left-[-10%] w-[50%] h-[50%] bg-teal-500/10 rounded-full blur-[120px] pointer-events-none"></div>
-            <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-blue-500/5 rounded-full blur-[120px] pointer-events-none"></div>
 
             <div className="max-w-7xl mx-auto px-6 relative z-10 grid lg:grid-cols-2 gap-16 items-center">
 
                 {/* Text Content */}
-                <div className="text-center lg:text-right space-y-10">
-                    <div className="flex justify-center lg:justify-start">
-                        <span className="bg-teal-500/10 text-teal-800 border border-teal-500/20 px-6 py-2 rounded-full text-xs font-black inline-flex items-center gap-2 uppercase tracking-widest shadow-sm">
-                            <Sparkles className="w-4 h-4 text-teal-600" />
-                            مستقبل الرعاية الصحية الذكية
+                <motion.div 
+                    variants={containerVariants}
+                    initial="hidden"
+                    animate="visible"
+                    className="text-center lg:text-right space-y-8"
+                >
+                    <motion.div variants={itemVariants} className="flex justify-center lg:justify-start">
+                        <span className="bg-[#0070CD]/10 text-[#005099] border border-[#0070CD]/20 px-5 py-2 rounded-full text-xs font-bold inline-flex items-center gap-2 tracking-wide shadow-sm backdrop-blur-sm">
+                            <Sparkles className="w-4 h-4 text-[#0070CD]" />
+                            مستقبل الرعاية الصحية بين يديك
                         </span>
-                    </div>
+                    </motion.div>
 
-                    <h1 className="text-6xl lg:text-8xl font-black leading-[1.1] text-slate-900 tracking-tighter">
-                        صحتك في <br />
-                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-teal-600 via-emerald-600 to-cyan-600">
-                             مدار الأمان
+                    <motion.h1 variants={itemVariants} className="text-5xl lg:text-7xl font-black leading-[1.2] text-slate-900 tracking-tight">
+                        منظومة صحية <br />
+                        <span className="text-transparent bg-clip-text bg-gradient-to-l from-[#005099] via-[#0070CD] to-[#3399FF] inline-block mt-2">
+                             متكاملة و ذكية
                         </span>
-                    </h1>
+                    </motion.h1>
 
-                    <p className="text-xl text-slate-500 leading-relaxed max-w-2xl mx-auto lg:mx-0 font-medium">
-                        نبض ليس مجرد تطبيق، بل رفيقك الصحي الذكي الذي يربطك بالعالم الطبي المتطور، مع سجل مرصود بدقة وحلول استباقية.
-                    </p>
+                    <motion.p variants={itemVariants} className="text-lg lg:text-xl text-slate-500 leading-relaxed max-w-xl mx-auto lg:mx-0 font-medium">
+                        نبض يضع صحتك في مقدمة الأولويات عبر بيئة رقمية متطورة تربطك بأفضل الأطباء وتقدم لك تحليلات ذكية فورية لحالتك.
+                    </motion.p>
 
-                    <div className="flex flex-col sm:flex-row gap-5 justify-center lg:justify-start pt-6">
-                        <button className="group relative px-10 py-5 bg-slate-900 text-white rounded-[1.5rem] font-black transition-all hover:bg-teal-900 shadow-2xl shadow-slate-900/20 hover:-translate-y-1 active:translate-y-0.5 overflow-hidden"
+                    <motion.div variants={itemVariants} className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start pt-4">
+                        <button className="group relative px-8 py-4 bg-[#0070CD] text-white rounded-2xl font-bold transition-all hover:bg-[#005099] shadow-[0_8px_25px_rgba(0,112,205,0.35)] hover:shadow-[0_12px_30px_rgba(0,112,205,0.45)] hover:-translate-y-1 active:translate-y-0 overflow-hidden flex items-center justify-center gap-3"
                             onClick={() => navigate('/register')}
                         >
-                            <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/5 to-white/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700"></div>
-                            <div className="flex items-center justify-center gap-3">
-                                <User className="w-5 h-5 text-teal-400" />
-                                <span>ابدأ كـ مريض</span>
-                            </div>
+                            <div className="absolute inset-0 bg-white/20 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700"></div>
+                            <User className="w-5 h-5 text-blue-100" />
+                            <span>ابدأ كـ مريض</span>
+                            <ArrowLeft className="w-4 h-4 mr-2 group-hover:-translate-x-1 transition-transform" />
                         </button>
                         
-                        <button className="px-10 py-5 bg-white text-teal-700 border-2 border-teal-100 rounded-[1.5rem] font-black transition-all hover:bg-teal-50 hover:border-teal-200 flex items-center justify-center gap-3 shadow-xl shadow-teal-900/5 hover:-translate-y-1"
+                        <button className="px-8 py-4 bg-white text-[#0070CD] border border-[#0070CD]/20 rounded-2xl font-bold transition-all hover:bg-[#F0F7FF] flex items-center justify-center gap-3 shadow-md hover:-translate-y-1"
                             onClick={() => navigate('/register')}
                         >
                             <Stethoscope className="w-5 h-5" />
                             <span>انضم كـ طبيب</span>
                         </button>
+                    </motion.div>
+
+                    <motion.div variants={itemVariants} className="pt-8 flex flex-wrap items-center justify-center lg:justify-start gap-6 text-sm text-slate-600 font-semibold">
+                        <span className="flex items-center gap-2"><Shield className="w-5 h-5 text-[#0070CD]" /> أمان تام</span>
+                        <div className="w-1.5 h-1.5 rounded-full bg-slate-300"></div>
+                        <span className="flex items-center gap-2"><Activity className="w-5 h-5 text-[#0070CD]" /> تشخيص AI</span>
+                        <div className="w-1.5 h-1.5 rounded-full bg-slate-300"></div>
+                        <span className="flex items-center gap-2"><Clock className="w-5 h-5 text-[#0070CD]" /> متوفر دائماً</span>
+                    </motion.div>
+                </motion.div>
+
+                {/* Visual Content - Orbital Ecosystem Animation */}
+                <motion.div 
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ duration: 1 }}
+                    className="relative hidden lg:flex items-center justify-center h-[600px] perspective-1000"
+                >
+                    {/* Glowing Backdrop */}
+                    <div className="absolute inset-0 flex items-center justify-center">
+                        <div className="w-[80%] h-[80%] bg-gradient-to-tr from-[#0070CD]/20 to-cyan-300/20 rounded-full blur-[80px]"></div>
                     </div>
 
-                    <div className="pt-10 flex flex-wrap items-center justify-center lg:justify-start gap-8 text-xs text-slate-400 font-black tracking-widest uppercase">
-                        <span className="flex items-center gap-2 px-4 py-2 bg-white rounded-xl shadow-sm border border-slate-100"><Shield className="w-4 h-4 text-teal-500" /> تشفير كامل</span>
-                        <span className="flex items-center gap-2 px-4 py-2 bg-white rounded-xl shadow-sm border border-slate-100"><Activity className="w-4 h-4 text-emerald-500" /> تشخيص AI</span>
-                        <span className="flex items-center gap-2 px-4 py-2 bg-white rounded-xl shadow-sm border border-slate-100"><Clock className="w-4 h-4 text-blue-500" /> متاح 24/7</span>
-                    </div>
-                </div>
-
-                {/* Visual Content */}
-                <div className="relative hidden lg:block perspective-1000">
-                    {/* Main Decorative Card */}
-                    <div className="relative bg-white border border-slate-100 rounded-[3rem] shadow-[0_40px_100px_rgba(0,0,0,0.08)] p-12 transition-all duration-700 hover:rotate-0 rotate-3 hover:scale-105 group">
-                        
-                        {/* Status Dots */}
-                        <div className="flex justify-between items-center mb-10">
-                            <div className="flex gap-2">
-                                <div className="w-3 h-3 rounded-full bg-slate-100"></div>
-                                <div className="w-3 h-3 rounded-full bg-slate-100"></div>
-                                <div className="w-3 h-3 rounded-full bg-slate-100"></div>
-                            </div>
-                            <div className="flex items-center gap-2 bg-teal-50 px-3 py-1 rounded-full">
-                                <div className="w-1.5 h-1.5 rounded-full bg-teal-500 animate-pulse"></div>
-                                <span className="text-[10px] font-black text-teal-700 tracking-wider">LIVE ANALYSIS</span>
-                            </div>
+                    {/* Central Pulsing Heart Node */}
+                    <motion.div 
+                        animate={{ 
+                            boxShadow: [
+                                "0px 0px 0px 0px rgba(0,112,205,0.4)", 
+                                "0px 0px 0px 40px rgba(0,112,205,0)", 
+                                "0px 0px 0px 0px rgba(0,112,205,0)"
+                            ]
+                        }}
+                        transition={{ duration: 2.5, repeat: Infinity }}
+                        className="relative z-20 w-36 h-36 bg-white rounded-full shadow-[0_20px_40px_-10px_rgba(0,112,205,0.3)] flex items-center justify-center border-4 border-[#0070CD]/10"
+                    >
+                        <div className="w-28 h-28 bg-gradient-to-br from-[#0070CD] to-[#005099] rounded-full flex items-center justify-center shadow-inner relative overflow-hidden">
+                            <motion.div 
+                                animate={{ scale: [1, 1.1, 1] }}
+                                transition={{ duration: 1, repeat: Infinity, ease: "easeInOut" }}
+                            >
+                                <Heart className="w-12 h-12 text-white fill-white/20" />
+                            </motion.div>
+                            <svg className="absolute bottom-2 w-full h-8 stroke-white/30" viewBox="0 0 100 20" fill="none">
+                                <path d="M0 10 H20 L25 5 L35 18 L45 2 L55 15 L60 10 H100" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                            </svg>
                         </div>
+                    </motion.div>
 
-                        {/* Analysis Content */}
-                        <div className="flex gap-6 mb-10">
-                            <div className="w-20 h-20 bg-gradient-to-br from-teal-500 to-emerald-600 rounded-3xl flex items-center justify-center text-white shadow-xl shadow-teal-500/20 group-hover:rotate-12 transition-transform duration-500">
-                                <Activity className="w-10 h-10" />
+                    {/* First Orbital Ring (Inner) */}
+                    <motion.div 
+                        animate={{ rotate: 360 }}
+                        transition={{ duration: 40, repeat: Infinity, ease: "linear" }}
+                        className="absolute z-10 w-[300px] h-[300px] border border-[#0070CD]/15 text-[#0070CD]/10 rounded-full border-dashed"
+                    >
+                        {/* Inner Node 1 */}
+                        <motion.div 
+                            className="absolute -top-7 left-1/2 -ml-7 w-14 h-14 bg-white rounded-2xl shadow-lg flex items-center justify-center border border-white"
+                            animate={{ rotate: -360 }}
+                            transition={{ duration: 40, repeat: Infinity, ease: "linear" }}
+                        >
+                            <div className="w-10 h-10 bg-blue-50 rounded-xl flex items-center justify-center">
+                                <Stethoscope className="w-5 h-5 text-[#0070CD]" />
                             </div>
-                            <div className="flex-1 space-y-4">
-                                <div className="h-4 w-1/3 bg-slate-100 rounded-full"></div>
-                                <div className="h-2 w-full bg-slate-50 rounded-full"></div>
-                                <div className="h-2 w-5/6 bg-slate-50 rounded-full"></div>
+                        </motion.div>
+
+                        {/* Inner Node 2 */}
+                        <motion.div 
+                            className="absolute -bottom-7 left-1/2 -ml-7 w-14 h-14 bg-white rounded-2xl shadow-lg flex items-center justify-center border border-white"
+                            animate={{ rotate: -360 }}
+                            transition={{ duration: 40, repeat: Infinity, ease: "linear" }}
+                        >
+                            <div className="w-10 h-10 bg-indigo-50 rounded-xl flex items-center justify-center">
+                                <User className="w-5 h-5 text-indigo-500" />
                             </div>
-                        </div>
+                        </motion.div>
+                    </motion.div>
 
-                        {/* AI Insight Overlay */}
-                        <div className="bg-gradient-to-br from-slate-900 to-slate-800 p-8 rounded-[2rem] shadow-2xl text-white relative overflow-hidden">
-                            <div className="absolute top-0 right-0 w-32 h-32 bg-teal-500/20 rounded-full blur-3xl"></div>
-                            <div className="flex items-center gap-3 mb-4">
-                                <Sparkles className="w-5 h-5 text-teal-400" />
-                                <span className="text-xs font-black uppercase tracking-[0.2em] text-teal-100">AI PROGNOSIS</span>
+                    {/* Second Orbital Ring (Outer) */}
+                    <motion.div 
+                        animate={{ rotate: -360 }}
+                        transition={{ duration: 50, repeat: Infinity, ease: "linear" }}
+                        className="absolute z-0 w-[480px] h-[480px] border border-[#0070CD]/10 rounded-full"
+                    >
+                        {/* Outer Node 1 (AI) */}
+                        <motion.div 
+                            className="absolute top-[15%] left-[5%] w-16 h-16 bg-[#1F2E3C] rounded-2xl shadow-2xl flex items-center justify-center border border-[#0070CD]/20"
+                            animate={{ rotate: 360 }}
+                            transition={{ duration: 50, repeat: Infinity, ease: "linear" }}
+                        >
+                            <div className="relative">
+                                <div className="absolute inset-0 bg-[#3399FF] blur-md opacity-30"></div>
+                                <Brain className="w-8 h-8 text-[#3399FF] relative z-10" />
                             </div>
-                            <div className="space-y-3">
-                                <div className="h-2 w-full bg-white/10 rounded-full overflow-hidden">
-                                     <div className="h-full w-[85%] bg-teal-400 rounded-full animate-pulse"></div>
-                                </div>
-                                <div className="h-2 w-2/3 bg-white/10 rounded-full"></div>
-                            </div>
-                        </div>
-                    </div>
+                        </motion.div>
 
-                    {/* Floating Health Metric */}
-                    <div className="absolute -top-10 -left-10 bg-white p-6 rounded-[2rem] shadow-2xl border border-slate-50 animate-bounce-slow">
-                        <Heart className="w-10 h-10 text-rose-500 fill-current" />
-                        <div className="mt-2 h-1 w-8 bg-rose-100 rounded-full"></div>
-                    </div>
+                        {/* Outer Node 2 (Records) */}
+                        <motion.div 
+                            className="absolute bottom-[10%] left-[10%] w-16 h-16 bg-white rounded-2xl shadow-[0_10px_20px_rgba(0,0,0,0.05)] flex items-center justify-center border border-slate-100"
+                            animate={{ rotate: 360 }}
+                            transition={{ duration: 50, repeat: Infinity, ease: "linear" }}
+                        >
+                            <FileText className="w-8 h-8 text-teal-500" />
+                        </motion.div>
 
-                    {/* Stats Bubble */}
-                    <div className="absolute -bottom-10 -right-10 bg-teal-600 p-8 rounded-[2.5rem] shadow-2xl text-white border-4 border-white">
-                        <div className="text-[10px] font-black uppercase tracking-[0.2em] opacity-80">PATIENTS SERVED</div>
-                        <div className="text-4xl font-black mt-1">12K+</div>
-                    </div>
-                </div>
+                        {/* Outer Node 3 (Pills) */}
+                        <motion.div 
+                            className="absolute top-[20%] right-[5%] w-16 h-16 bg-white rounded-2xl shadow-[0_10px_20px_rgba(0,0,0,0.05)] flex items-center justify-center border border-slate-100"
+                            animate={{ rotate: 360 }}
+                            transition={{ duration: 50, repeat: Infinity, ease: "linear" }}
+                        >
+                            <Pill className="w-8 h-8 text-orange-500" />
+                        </motion.div>
 
+                        {/* Outer Node 4 (Security) */}
+                        <motion.div 
+                            className="absolute bottom-[15%] right-[5%] w-16 h-16 bg-white rounded-2xl shadow-[0_10px_20px_rgba(0,0,0,0.05)] flex items-center justify-center border border-slate-100"
+                            animate={{ rotate: 360 }}
+                            transition={{ duration: 50, repeat: Infinity, ease: "linear" }}
+                        >
+                            <Shield className="w-8 h-8 text-emerald-500" />
+                        </motion.div>
+                    </motion.div>
+
+                    {/* Floating Connection Lines (Visual Polish) */}
+                    <svg className="absolute inset-0 w-full h-full pointer-events-none z-0" style={{ transform: "translateZ(-1px)" }}>
+                        <motion.circle 
+                            cx="50%" cy="50%" r="240" 
+                            stroke="url(#gradient)" strokeWidth="1" fill="none" 
+                            strokeDasharray="4 8"
+                            animate={{ rotate: 360 }}
+                            transition={{ duration: 100, repeat: Infinity, ease: "linear" }}
+                            style={{ transformOrigin: "center" }}
+                        />
+                        <defs>
+                            <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" stopColor="#0070CD" stopOpacity="0.3" />
+                                <stop offset="50%" stopColor="#3399FF" stopOpacity="0" />
+                                <stop offset="100%" stopColor="#0070CD" stopOpacity="0.3" />
+                            </linearGradient>
+                        </defs>
+                    </svg>
+
+                </motion.div>
             </div>
         </section>
     );
