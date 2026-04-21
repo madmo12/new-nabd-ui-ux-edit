@@ -14,7 +14,7 @@ import Footer from './components/Footer';
 
 const LandingPage = () => {
     return (
-        <div className="min-h-screen bg-[#F8FAFC] font-sans text-slate-900 selection:bg-teal-100 selection:text-teal-900" dir="rtl">
+        <div className="min-h-screen bg-[#F8FAFC] font-sans text-slate-900 selection:bg-[#0070CD]/20 selection:text-[#0070CD]" dir="rtl">
             <Header />
             <main>
                 <Hero />
