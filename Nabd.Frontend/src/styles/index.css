@@ -5,12 +5,12 @@
 @layer base {
   :root {
     /* Nabd Brand Colors */
-    --color-primary: 180 83% 39%;
-    /* #14b8a6 - Teal */
-    --color-primary-light: 174 72% 56%;
-    /* #2dd4bf */
-    --color-primary-dark: 173 58% 39%;
-    /* #0d9488 */
+    --color-primary: 207 100% 40%;
+    /* #0070cd - Blue */
+    --color-primary-light: 207 100% 55%;
+    /* #1a8cff */
+    --color-primary-dark: 207 100% 30%;
+    /* #005099 */
 
     --color-secondary: 158 64% 52%;
     /* #10b981 - Emerald */
@@ -18,10 +18,10 @@
     /* #3b82f6 - Blue */
 
     /* Nabd Brand Colors */
-    --nabd-primary: 182 68% 33%;
-    /* #1C8B8F - Teal Medical */
-    --nabd-primary-dark: 182 68% 25%;
-    /* #14666A - Deep Teal */
+    --nabd-primary: 207 100% 40%;
+    /* #0070CD - Doctor Blue */
+    --nabd-primary-dark: 207 100% 30%;
+    /* #005099 - Deep Blue */
     --nabd-secondary: 207 35% 18%;
     /* #1F2E3C - Soft Navy */
     --nabd-neutral: 200 20% 92%;
@@ -52,7 +52,7 @@
     /* UI Colors */
     --color-border: 220 13% 91%;
     --color-input: 220 13% 91%;
-    --color-ring: 180 83% 39%;
+    --color-ring: 207 100% 40%;
 
     /* Border Radius */
     --radius-sm: 0.25rem;
@@ -78,7 +78,7 @@
   }
 
   * {
-    @apply border-gray-200;
+    border-color: hsl(var(--color-gray-200));
   }
 }
 

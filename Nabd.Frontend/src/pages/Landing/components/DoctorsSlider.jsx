@@ -1,4 +1,6 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { ChevronRight, ChevronLeft, MapPin, Briefcase, Star } from 'lucide-react';
 
 const doctorsData = [
     {
@@ -63,446 +65,167 @@ const doctorsData = [
     }
 ];
 
-const config = {
-    colors: {
-        primary: '#1C8B8F', // Nabd Primary
-        secondary: '#1F2E3C', // Nabd Secondary
-        white: '#FFFFFF',
-        lightBg: '#F0FDFA', // Very light teal for text area
-        darkText: '#1F2E3C',
-        lightText: '#4A5568',
-        star: '#F59E0B',
-        shadow: 'rgba(0, 0, 0, 0.08)',
-        icon: '#1C8B8F',
-        separator: '#CBD5E0',
-    },
-    padding: 40,
-    borderRadius: 24
-};
-
-const icons = {
-    briefcase: 'M7.5 7.5C7.5 5.843 8.843 4.5 10.5 4.5h3C15.157 4.5 16.5 5.843 16.5 7.5v.75H18.75c1.243 0 2.25 1.007 2.25 2.25v6c0 1.243-1.007 2.25-2.25 2.25H5.25c-1.243 0-2.25-1.007-2.25-2.25v-6c0-1.243 1.007 2.25 2.25-2.25H7.5V7.5zM9 8.25V7.5c0-.828.672-1.5 1.5-1.5h3c.828 0 1.5.672 1.5 1.5v.75H9z',
-    location: 'M12 2C8.134 2 5 5.134 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.866-3.134-7-7-7zm0 9.5a2.5 2.5 0 110-5 2.5 2.5 0 010 5z'
-};
-
 const DoctorsSlider = () => {
-    const canvasRef = useRef(null);
     const [currentIndex, setCurrentIndex] = useState(0);
-    const [imagesLoaded, setImagesLoaded] = useState(false);
-    const doctorImagesRef = useRef([]);
-
-    useEffect(() => {
-        let loadedCount = 0;
-        const totalImages = doctorsData.length;
-
-        if (totalImages === 0) {
-            setImagesLoaded(true);
-            return;
-        }
-
-        doctorsData.forEach((doctor, index) => {
-            if (!doctor.imageSrc) {
-                loadedCount++;
-                doctorImagesRef.current[index] = null;
-                if (loadedCount === totalImages) setImagesLoaded(true);
-                return;
-            }
-
-            const img = new Image();
-            img.crossOrigin = "anonymous";
-            img.src = doctor.imageSrc;
-            doctorImagesRef.current[index] = img;
-
-            img.onload = () => {
-                loadedCount++;
-                if (loadedCount === totalImages) setImagesLoaded(true);
-            };
-
-            img.onerror = () => {
-                loadedCount++;
-                console.error(`Failed to load image for ${doctor.name}`);
-                doctorImagesRef.current[index] = null;
-                if (loadedCount === totalImages) setImagesLoaded(true);
-            };
-        });
-    }, []);
-
-    useEffect(() => {
-        if (imagesLoaded) {
-            drawCard(currentIndex);
-        }
-    }, [currentIndex, imagesLoaded]);
-
-    useEffect(() => {
-        const handleResize = () => {
-            if (imagesLoaded) {
-                drawCard(currentIndex);
-            }
-        };
-        window.addEventListener('resize', handleResize);
-        return () => window.removeEventListener('resize', handleResize);
-    }, [currentIndex, imagesLoaded]);
-
-    const drawRoundedRect = (ctx, x, y, width, height, radius) => {
-        ctx.beginPath();
-        ctx.moveTo(x + radius, y);
-        ctx.lineTo(x + width - radius, y);
-        ctx.arcTo(x + width, y, x + width, y + radius, radius);
-        ctx.lineTo(x + width, y + height - radius);
-        ctx.arcTo(x + width, y + height, x + width - radius, y + height, radius);
-        ctx.lineTo(x + radius, y + height);
-        ctx.arcTo(x, y + height, x, y + height - radius, radius);
-        ctx.lineTo(x, y + radius);
-        ctx.arcTo(x, y, x + radius, y, radius);
-        ctx.closePath();
-    };
-
-    const drawCardBackground = (ctx, w, h) => {
-        ctx.save();
-        // Main Card Shadow
-        ctx.shadowColor = config.colors.shadow;
-        ctx.shadowBlur = 40;
-        ctx.shadowOffsetX = 0;
-        ctx.shadowOffsetY = 20;
-
-        drawRoundedRect(ctx, 0, 0, w, h, config.borderRadius);
-        ctx.fillStyle = config.colors.white;
-        ctx.fill();
-
-        // Right side background (Text Area)
-        ctx.clip(); // Clip to rounded rect
-        ctx.fillStyle = config.colors.lightBg;
-        // Fill the right half (RTL perspective: visually right side)
-        // Since we draw image on left (0 to w*0.45), text is on right.
-        ctx.fillRect(w * 0.45, 0, w * 0.55, h);
-
-        ctx.restore();
-    };
-
-    const drawDoctorImage = (ctx, w, h, image) => {
-        const imgWidth = w * 0.45; // Image takes 45% width
-        const imgHeight = h;
-
-        if (!image || !image.complete || image.naturalHeight === 0) {
-            ctx.save();
-            ctx.fillStyle = '#E2E8F0';
-            ctx.fillRect(0, 0, imgWidth, imgHeight);
-            ctx.font = '16px Cairo';
-            ctx.fillStyle = config.colors.lightText;
-            ctx.textAlign = 'center';
-            ctx.fillText('جاري تحميل الصورة', imgWidth / 2, h / 2);
-            ctx.restore();
-            return;
-        }
-
-        const imageAspectRatio = image.naturalWidth / image.naturalHeight;
-        const containerAspectRatio = imgWidth / imgHeight;
-        let sx, sy, sWidth, sHeight;
-
-        if (imageAspectRatio > containerAspectRatio) {
-            sHeight = image.naturalHeight;
-            sWidth = sHeight * containerAspectRatio;
-            sx = (image.naturalWidth - sWidth) / 2;
-            sy = 0;
-        } else {
-            sWidth = image.naturalWidth;
-            sHeight = sWidth / containerAspectRatio;
-            sy = (image.naturalHeight - sHeight) / 2;
-            sx = 0;
-        }
-
-        ctx.save();
-        // Create a path for the left side of the card with rounded corners
-        ctx.beginPath();
-        ctx.moveTo(config.borderRadius, 0);
-        ctx.lineTo(imgWidth, 0);
-        ctx.lineTo(imgWidth, h);
-        ctx.lineTo(config.borderRadius, h);
-        ctx.arcTo(0, h, 0, h - config.borderRadius, config.borderRadius);
-        ctx.lineTo(0, config.borderRadius);
-        ctx.arcTo(0, 0, config.borderRadius, 0, config.borderRadius);
-        ctx.closePath();
-        ctx.clip();
-
-        ctx.drawImage(image, sx, sy, sWidth, sHeight, 0, 0, imgWidth, imgHeight);
-        ctx.restore();
-    };
-
-    const drawStar = (ctx, cx, cy, spikes, outerRadius, innerRadius) => {
-        let rot = Math.PI / 2 * 3;
-        let x = cx;
-        let y = cy;
-        let step = Math.PI / spikes;
-
-        ctx.beginPath();
-        ctx.moveTo(cx, cy - outerRadius);
-
-        for (let i = 0; i < spikes; i++) {
-            x = cx + Math.cos(rot) * outerRadius;
-            y = cy + Math.sin(rot) * outerRadius;
-            ctx.lineTo(x, y);
-            rot += step;
-
-            x = cx + Math.cos(rot) * innerRadius;
-            y = cy + Math.sin(rot) * innerRadius;
-            ctx.lineTo(x, y);
-            rot += step;
-        }
-
-        ctx.lineTo(cx, cy - outerRadius);
-        ctx.closePath();
-    };
-
-    const wrapText = (ctx, text, x, y, maxWidth, lineHeight) => {
-        const words = text.split(' ');
-        let line = '';
-        let lineCount = 0;
-
-        for (let n = 0; n < words.length; n++) {
-            if (lineCount >= 3) break; // Allow 3 lines
-
-            const testLine = line + words[n] + ' ';
-            const metrics = ctx.measureText(testLine);
-            const testWidth = metrics.width;
-
-            if (testWidth > maxWidth && n > 0) {
-                ctx.fillText(line, x, y);
-                line = words[n] + ' ';
-                y += lineHeight;
-                lineCount++;
-            } else {
-                line = testLine;
-            }
-        }
-
-        if (lineCount < 3) {
-            ctx.fillText(line.trim(), x, y);
-        }
-    };
-
-    const drawIcon = (ctx, path, x, y, size) => {
-        ctx.save();
-        const p = new Path2D(path);
-        const scale = size / 24;
-        ctx.translate(x, y);
-        ctx.scale(scale, scale);
-        ctx.fillStyle = config.colors.icon;
-        ctx.fill(p);
-        ctx.restore();
-    };
-
-    const drawRatingStars = (ctx, x, y, rating, starSize, ratingText) => {
-        const starSpacing = starSize * 1.3;
-
-        ctx.font = `600 ${Math.max(14, starSize * 0.8)}px Cairo`;
-        ctx.fillStyle = config.colors.lightText;
-        ctx.textAlign = 'right';
-        ctx.fillText(ratingText, x, y + 6);
-
-        const textWidth = ctx.measureText(ratingText).width;
-        const starBlockRightEdge = x - textWidth - 15;
-
-        ctx.save();
-        for (let i = 0; i < 5; i++) {
-            const currentStarX = starBlockRightEdge - (i * starSpacing) - (starSize / 2);
-            ctx.fillStyle = i < Math.floor(rating) ? config.colors.star : config.colors.separator;
-            drawStar(ctx, currentStarX, y, 5, starSize / 2, starSize / 4);
-            ctx.fill();
-        }
-        ctx.restore();
-    };
-
-    const drawActions = (ctx, w, h, x, contentAreaWidth) => {
-        const actionHeight = 50;
-        const buttonWidth = Math.min(160, contentAreaWidth / 2 - 10);
-        const buttonGap = 20;
-        const buttonFontSize = Math.max(15, w * 0.018);
-        const buttonsY = h - actionHeight - config.padding;
-        const rightEdge = x + contentAreaWidth;
-
-        // زر "احجز الآن" - Solid Primary
-        const bookButtonX = rightEdge - buttonWidth;
-
-        ctx.shadowColor = 'rgba(28, 139, 143, 0.3)';
-        ctx.shadowBlur = 10;
-        ctx.shadowOffsetY = 4;
-
-        drawRoundedRect(ctx, bookButtonX, buttonsY, buttonWidth, actionHeight, 14);
-        ctx.fillStyle = config.colors.primary;
-        ctx.fill();
-
-        ctx.shadowColor = 'transparent'; // Reset shadow for text
-
-        ctx.font = `bold ${buttonFontSize}px Cairo`;
-        ctx.fillStyle = config.colors.white;
-        ctx.textAlign = 'center';
-        ctx.fillText('احجز الآن', bookButtonX + buttonWidth / 2, buttonsY + actionHeight / 2 + 6);
-
-        // زر "الملف الشخصي" - Outlined or Secondary
-        const profileButtonX = bookButtonX - buttonGap - buttonWidth;
-
-        // Draw border for profile button
-        ctx.lineWidth = 2;
-        ctx.strokeStyle = config.colors.primary;
-        drawRoundedRect(ctx, profileButtonX, buttonsY, buttonWidth, actionHeight, 14);
-        ctx.stroke();
-
-        ctx.fillStyle = config.colors.primary;
-        ctx.fillText('الملف الشخصي', profileButtonX + buttonWidth / 2, buttonsY + actionHeight / 2 + 6);
-
-        ctx.textAlign = 'right';
-    };
-
-    const drawDoctorInfo = (ctx, w, h, doctor) => {
-        ctx.save();
-        ctx.direction = 'rtl';
-
-        const imgWidth = w * 0.45;
-        const contentStartX = imgWidth + config.padding;
-        const contentAreaX = w - config.padding;
-        const contentAreaWidth = contentAreaX - contentStartX;
-
-        const actionHeight = 50;
-        const contentTopY = config.padding;
-        const contentBottomY = h - config.padding - actionHeight;
-        const availableHeight = contentBottomY - contentTopY;
-
-        let currentY;
-
-        // اسم الطبيب
-        currentY = contentTopY + (availableHeight * 0.1);
-        const nameFontSize = Math.max(26, w * 0.035);
-        ctx.font = `800 ${nameFontSize}px Cairo`;
-        ctx.fillStyle = config.colors.darkText;
-        ctx.textAlign = 'right';
-        ctx.fillText(doctor.name, contentAreaX, currentY);
-        currentY += nameFontSize * 1.3;
-
-        // التخصص
-        const specialtyFontSize = Math.max(18, w * 0.022);
-        ctx.font = `600 ${specialtyFontSize}px Cairo`;
-        ctx.fillStyle = config.colors.primary;
-        ctx.fillText(doctor.specialty, contentAreaX, currentY);
-
-        // التقييم
-        currentY = contentTopY + (availableHeight * 0.35);
-        drawRatingStars(ctx, contentAreaX, currentY, doctor.rating, 20, `${doctor.rating} (${doctor.reviews} تقييم)`);
-
-        // الوصف
-        currentY = contentTopY + (availableHeight * 0.52);
-        const bioFontSize = Math.max(15, w * 0.019);
-        ctx.font = `500 ${bioFontSize}px Cairo`;
-        ctx.fillStyle = config.colors.lightText;
-        wrapText(ctx, doctor.bio, contentAreaX, currentY, contentAreaWidth, bioFontSize * 1.6);
-
-        // الخبرة والموقع
-        currentY = contentTopY + (availableHeight * 0.85);
-        const metaFontSize = Math.max(15, w * 0.019);
-        ctx.font = `600 ${metaFontSize}px Cairo`;
-        ctx.fillStyle = config.colors.darkText;
-
-        // Location
-        const locationTextWidth = ctx.measureText(doctor.location).width;
-        ctx.fillText(doctor.location, contentAreaX - 25, currentY + 5);
-        drawIcon(ctx, icons.location, contentAreaX, currentY - 10, 22);
-
-        // Experience
-        const experienceX = contentAreaX - locationTextWidth - 60;
-        ctx.fillText(doctor.experience, experienceX - 25, currentY + 5);
-        drawIcon(ctx, icons.briefcase, experienceX, currentY - 10, 22);
-
-        drawActions(ctx, w, h, contentStartX, contentAreaWidth);
-        ctx.restore();
-    };
-
-    const drawCard = (index) => {
-        const canvas = canvasRef.current;
-        if (!canvas) return;
-        const ctx = canvas.getContext('2d');
-        const doctor = doctorsData[index];
-        const doctorImage = doctorImagesRef.current[index];
-        const dpr = window.devicePixelRatio || 1;
-        const rect = canvas.parentElement.getBoundingClientRect();
-
-        canvas.width = rect.width * dpr;
-        canvas.height = (rect.width * 0.55) * dpr; // Slightly taller
-        if (canvas.height > 520 * dpr) canvas.height = 520 * dpr;
-
-        canvas.style.width = `${rect.width}px`;
-        canvas.style.height = `${canvas.height / dpr}px`;
-
-        ctx.scale(dpr, dpr);
-
-        const canvasW = canvas.width / dpr;
-        const canvasH = canvas.height / dpr;
-
-        ctx.clearRect(0, 0, canvasW, canvasH);
-
-        drawCardBackground(ctx, canvasW, canvasH);
-        drawDoctorImage(ctx, canvasW, canvasH, doctorImage);
-        drawDoctorInfo(ctx, canvasW, canvasH, doctor);
-    };
+    const [direction, setDirection] = useState(1);
 
     const nextSlide = () => {
+        setDirection(1);
         setCurrentIndex((prev) => (prev + 1) % doctorsData.length);
     };
 
     const prevSlide = () => {
+        setDirection(-1);
         setCurrentIndex((prev) => (prev - 1 + doctorsData.length) % doctorsData.length);
     };
 
+    const variants = {
+        enter: (direction) => {
+            return {
+                x: direction > 0 ? 100 : -100,
+                opacity: 0,
+                scale: 0.95
+            };
+        },
+        center: {
+            zIndex: 1,
+            x: 0,
+            opacity: 1,
+            scale: 1
+        },
+        exit: (direction) => {
+            return {
+                zIndex: 0,
+                x: direction < 0 ? 100 : -100,
+                opacity: 0,
+                scale: 0.95
+            };
+        }
+    };
+
+    const currentDoc = doctorsData[currentIndex];
+
     return (
-        <section id="doctors" className="flex flex-col items-center justify-center w-full max-w-6xl py-10 mx-auto my-10 px-4">
-            <h2 className="text-4xl font-bold text-[#1F2E3C] mb-4 text-center">تعرف على نخبة من أطبائنا</h2>
-            <p className="text-lg text-gray-600 max-w-3xl mx-auto mb-12 text-center">
-                اختر من بين أفضل الأطباء والمتخصصين في مصر لبدء رحلتك الصحية.
-            </p>
-
-            <div className="relative w-full max-w-4xl">
-                <canvas ref={canvasRef} id="doctorCardCanvas" className="cursor-pointer w-full"></canvas>
-
-                {/* Navigation Arrows - Positioned outside */}
-                <button
-                    onClick={nextSlide}
-                    className="absolute top-1/2 -translate-y-1/2 right-[-60px] hidden md:flex bg-white hover:bg-[#F0FDFA] text-[#1C8B8F] border border-[#1C8B8F]/20 rounded-full p-4 shadow-lg transition-all transform hover:scale-110 z-20"
-                    aria-label="Next Doctor"
-                >
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m9 18 6-6-6-6" /></svg>
-                </button>
-                <button
-                    onClick={prevSlide}
-                    className="absolute top-1/2 -translate-y-1/2 left-[-60px] hidden md:flex bg-white hover:bg-[#F0FDFA] text-[#1C8B8F] border border-[#1C8B8F]/20 rounded-full p-4 shadow-lg transition-all transform hover:scale-110 z-20"
-                    aria-label="Previous Doctor"
-                >
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6" /></svg>
-                </button>
-
-                {/* Mobile Navigation Arrows (Inside but styled) */}
-                <div className="flex md:hidden justify-between absolute top-1/2 -translate-y-1/2 w-full px-2 pointer-events-none">
-                    <button
-                        onClick={prevSlide}
-                        className="pointer-events-auto bg-white/80 backdrop-blur text-[#1C8B8F] rounded-full p-2 shadow-md"
-                    >
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6" /></svg>
-                    </button>
-                    <button
-                        onClick={nextSlide}
-                        className="pointer-events-auto bg-white/80 backdrop-blur text-[#1C8B8F] rounded-full p-2 shadow-md"
-                    >
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m9 18 6-6-6-6" /></svg>
-                    </button>
+        <section id="doctors" className="py-32 bg-white relative overflow-hidden">
+            <div className="max-w-6xl mx-auto px-6">
+                <div className="text-center mb-16">
+                    <span className="text-[#0070CD] font-black text-xs uppercase tracking-widest mb-4 block">نخبة الأطباء</span>
+                    <h2 className="text-4xl lg:text-5xl font-black text-slate-900 mb-6 tracking-tight">
+                        رعاية طبية بأيدي <span className="text-transparent bg-clip-text bg-gradient-to-l from-[#005099] to-[#3399FF]">خبراء</span>
+                    </h2>
+                    <p className="text-slate-500 max-w-2xl mx-auto text-lg font-medium leading-relaxed">
+                        اختر من بين أفضل القطاعات الطبية في مصر، تقييمات حقيقية وخبرات موثوقة.
+                    </p>
                 </div>
-            </div>
 
-            {/* Pagination Dots */}
-            <div id="pagination-dots" className="flex justify-center space-x-2 mt-8 gap-3">
-                {doctorsData.map((_, index) => (
-                    <div
-                        key={index}
-                        onClick={() => setCurrentIndex(index)}
-                        className={`w-3 h-3 rounded-full transition-all duration-300 cursor-pointer ${index === currentIndex ? 'bg-[#1C8B8F] w-8' : 'bg-gray-400 hover:bg-[#1C8B8F]/60'}`}
-                    ></div>
-                ))}
+                <div className="relative w-full max-w-4xl mx-auto h-auto min-h-[500px]">
+                    <AnimatePresence initial={false} custom={direction}>
+                        <motion.div
+                            key={currentIndex}
+                            custom={direction}
+                            variants={variants}
+                            initial="enter"
+                            animate="center"
+                            exit="exit"
+                            transition={{
+                                x: { type: "spring", stiffness: 300, damping: 30 },
+                                opacity: { duration: 0.2 }
+                            }}
+                            className="absolute inset-0 w-full"
+                        >
+                            <div className="bg-white rounded-[2.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.08)] flex flex-col md:flex-row overflow-hidden border border-slate-100 h-full">
+                                {/* Image side */}
+                                <div className="md:w-5/12 relative h-64 md:h-auto overflow-hidden">
+                                    <div className="absolute inset-0 bg-[#0070CD]/20 mix-blend-overlay z-10"></div>
+                                    <img 
+                                        src={currentDoc.imageSrc} 
+                                        alt={currentDoc.name} 
+                                        className="w-full h-full object-cover object-top"
+                                    />
+                                </div>
+
+                                {/* Content side */}
+                                <div className="md:w-7/12 p-8 md:p-12 flex flex-col justify-center bg-[#F0F7FF]/50">
+                                    <div className="flex justify-between items-start mb-4">
+                                        <div>
+                                            <h3 className="text-3xl font-black text-slate-900 mb-2">{currentDoc.name}</h3>
+                                            <p className="text-[#0070CD] font-bold text-lg">{currentDoc.specialty}</p>
+                                        </div>
+                                        <div className="flex items-center gap-1 bg-white px-3 py-1.5 rounded-full shadow-sm border border-slate-100">
+                                            <Star className="w-4 h-4 text-amber-400 fill-current" />
+                                            <span className="font-bold text-slate-800 text-sm">{currentDoc.rating}</span>
+                                            <span className="text-slate-400 text-xs text-nowrap">({currentDoc.reviews}+)</span>
+                                        </div>
+                                    </div>
+
+                                    <p className="text-slate-600 leading-relaxed font-medium mb-8">
+                                        {currentDoc.bio}
+                                    </p>
+
+                                    <div className="flex flex-col sm:flex-row gap-6 mb-10">
+                                        <div className="flex items-center gap-3 text-slate-700">
+                                            <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center shadow-sm text-[#0070CD]">
+                                                <Briefcase className="w-5 h-5" />
+                                            </div>
+                                            <span className="font-bold text-sm">{currentDoc.experience}</span>
+                                        </div>
+                                        <div className="flex items-center gap-3 text-slate-700">
+                                            <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center shadow-sm text-[#0070CD]">
+                                                <MapPin className="w-5 h-5" />
+                                            </div>
+                                            <span className="font-bold text-sm">{currentDoc.location}</span>
+                                        </div>
+                                    </div>
+
+                                    <div className="flex gap-4 mt-auto">
+                                        <button className="flex-1 bg-[#0070CD] text-white py-4 rounded-2xl font-bold hover:bg-[#005099] shadow-[0_8px_20px_rgba(0,112,205,0.25)] hover:shadow-[0_10px_25px_rgba(0,112,205,0.35)] hover:-translate-y-0.5 transition-all">
+                                            احجز الآن
+                                        </button>
+                                        <button className="flex-1 bg-white text-[#0070CD] border-2 border-[#0070CD]/20 py-4 rounded-2xl font-bold hover:bg-[#F0F7FF] transition-colors">
+                                            الملف الشخصي
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </motion.div>
+                    </AnimatePresence>
+
+                    {/* Navigation Buttons */}
+                    <div className="absolute top-1/2 -mt-6 -left-6 md:-left-16 z-20">
+                        <button 
+                            onClick={prevSlide}
+                            className="w-12 h-12 bg-white rounded-full shadow-lg border border-slate-100 flex items-center justify-center text-[#0070CD] hover:scale-110 hover:bg-[#F0F7FF] transition-all"
+                        >
+                            <ChevronLeft className="w-6 h-6 mr-1" />
+                        </button>
+                    </div>
+                    <div className="absolute top-1/2 -mt-6 -right-6 md:-right-16 z-20">
+                        <button 
+                            onClick={nextSlide}
+                            className="w-12 h-12 bg-white rounded-full shadow-lg border border-slate-100 flex items-center justify-center text-[#0070CD] hover:scale-110 hover:bg-[#F0F7FF] transition-all"
+                        >
+                            <ChevronRight className="w-6 h-6 ml-1" />
+                        </button>
+                    </div>
+                </div>
+
+                {/* Pagination */}
+                <div className="flex justify-center gap-3 mt-16">
+                    {doctorsData.map((_, index) => (
+                        <button
+                            key={index}
+                            onClick={() => {
+                                setDirection(index > currentIndex ? 1 : -1);
+                                setCurrentIndex(index);
+                            }}
+                            className={`h-2.5 rounded-full transition-all duration-300 ${
+                                index === currentIndex 
+                                ? 'w-10 bg-[#0070CD]' 
+                                : 'w-2.5 bg-slate-300 hover:bg-slate-400'
+                            }`}
+                        />
+                    ))}
+                </div>
             </div>
         </section>
     );
