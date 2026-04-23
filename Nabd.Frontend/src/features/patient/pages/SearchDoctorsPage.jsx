@@ -47,6 +47,8 @@ const SearchDoctorsPage = () => {
     setMinRating,
     setAvailableToday,
     resetFilters,
+    setPageSize,
+    fillIncompleteRow,
   } = useDoctors();
 
   const handleViewProfile = (doctorId) => {
@@ -93,6 +95,37 @@ const SearchDoctorsPage = () => {
   useEffect(() => {
     scrollToTop();
   }, []);
+
+  // -------------------------------------------------------------
+  // GRID-AWARE PAGINATION LOGIC
+  // -------------------------------------------------------------
+  const [gridCols, setGridCols] = useState(3); // Default desktop
+
+  useEffect(() => {
+    const handleResize = () => {
+      let cols = 1;
+      if (window.innerWidth >= 1024) cols = 3; // lg
+      else if (window.innerWidth >= 768) cols = 2; // md
+      setGridCols(cols);
+    };
+
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  // Advanced Option: Fill incomplete rows on current page
+  useEffect(() => {
+    if (!loading && !error && filteredDoctors.length > 0 && hasNextPage) {
+      const remainder = filteredDoctors.length % gridCols;
+      if (remainder !== 0) {
+        const missingCount = gridCols - remainder;
+        console.log(`Grid alignment: Missing ${missingCount} items for a full row of ${gridCols}. Padding...`);
+        fillIncompleteRow(missingCount);
+      }
+    }
+  }, [loading, error, filteredDoctors.length, gridCols, hasNextPage, fillIncompleteRow]);
+  // -------------------------------------------------------------
 
   // Quick action specialties mapping
   const popularSpecialties = [

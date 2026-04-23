@@ -129,8 +129,15 @@ const PaymentStep = ({
     (selectedMethod === 'card' && isCardValid) || 
     (selectedMethod === 'vodafone' && isVodafoneValid);
 
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (canProceed && !processing && !loading) {
+      handlePayment();
+    }
+  };
+
   return (
-    <div className="max-w-3xl mx-auto space-y-8">
+    <form onSubmit={handleSubmit} className="max-w-3xl mx-auto space-y-8">
       {/* Payment Methods - Clean Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {paymentMethods.map((method) => {
@@ -138,6 +145,7 @@ const PaymentStep = ({
           return (
             <button
               key={method.id}
+              type="button"
               onClick={() => setSelectedMethod(method.id)}
               className={`
                 relative p-6 rounded-2xl border-2 transition-all duration-300
@@ -306,7 +314,7 @@ const PaymentStep = ({
 
       {/* Action Button - Clean & Professional */}
       <button
-        onClick={handlePayment}
+        type="submit"
         disabled={!canProceed || processing || loading}
         className={`
           w-full py-4 rounded-xl font-bold text-base
@@ -331,7 +339,7 @@ const PaymentStep = ({
           </>
         )}
       </button>
-    </div>
+    </form>
   );
 };
 

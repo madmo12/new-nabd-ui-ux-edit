@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
   FaUser,
   FaCalendarAlt,
@@ -58,8 +58,29 @@ const BookingSummary = ({
     }
   };
 
+  const handleConfirmBooking = (e) => {
+    if (e) e.preventDefault();
+    if (!loading) {
+      onConfirm();
+    }
+  };
+
+  // Force global Enter key capture for this specific step
+  useEffect(() => {
+    const handleKey = (e) => {
+      if (e.key === 'Enter') {
+        handleConfirmBooking(e);
+      }
+    };
+    window.addEventListener('keydown', handleKey);
+    return () => window.removeEventListener('keydown', handleKey);
+  }, [loading, onConfirm]);
+
   return (
-    <div className="max-w-2xl mx-auto space-y-4">
+    <form onSubmit={handleConfirmBooking} className="max-w-2xl mx-auto space-y-4">
+      {/* Hidden input to ensure form is focusable for native Enter submission fallback */}
+      <input type="text" className="opacity-0 absolute w-0 h-0 -z-10" autoFocus aria-hidden="true" tabIndex={-1} />
+
       {/* Booking Summary Card */}
       <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
         {/* Header with Doctor, Service & Price - All in One Line */}
@@ -150,7 +171,7 @@ const BookingSummary = ({
       {/* Action Buttons */}
       <div className="space-y-3">
         <button
-          onClick={onConfirm}
+          type="submit"
           disabled={loading}
           className="w-full py-4 rounded-xl bg-gradient-to-r from-[#0070CD] to-[#005ba3] text-white font-bold hover:from-[#005ba3] hover:to-[#004a87] transition-all flex items-center justify-center gap-2 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
         >
@@ -168,6 +189,7 @@ const BookingSummary = ({
         </button>
 
         <button
+          type="button"
           onClick={() => onEdit(1)}
           className="w-full py-3 rounded-xl bg-white border border-slate-300 text-slate-700 font-semibold hover:bg-slate-50 transition-all flex items-center justify-center gap-2"
         >
@@ -183,7 +205,7 @@ const BookingSummary = ({
         {' '}و{' '}
         <span className="text-[#0070CD] font-semibold">سياسة الخصوصية</span>
       </p>
-    </div>
+    </form>
   );
 };
 
