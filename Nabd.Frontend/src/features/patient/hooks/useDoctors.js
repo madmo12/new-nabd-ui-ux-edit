@@ -45,6 +45,8 @@ export const useDoctors = ({ autoFetch = true } = {}) => {
     resetFilters,
     clearSelectedDoctor,
     clearError,
+    setPageSize,
+    fillIncompleteRow,
   } = useDoctorsStore();
 
   // Auto-fetch doctors on mount
@@ -93,5 +95,7 @@ export const useDoctors = ({ autoFetch = true } = {}) => {
     resetFilters,
     clearSelectedDoctor,
     clearError,
+    setPageSize,
+    fillIncompleteRow,
   };
 };

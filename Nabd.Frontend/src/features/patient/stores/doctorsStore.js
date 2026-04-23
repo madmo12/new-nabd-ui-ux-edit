@@ -20,7 +20,7 @@ export const useDoctorsStore = create(
 
         // Server-side Pagination
         pageNumber: 1,
-        pageSize: 10, // Match backend default
+        pageSize: 12, // 12 is optimal: multiple of 1, 2, 3, and 4 column grids
         totalCount: 0,
         totalPages: 0,
         hasPreviousPage: false,
@@ -56,7 +56,7 @@ export const useDoctorsStore = create(
             // Build API parameters with pagination
             const params = {
               PageNumber: pageNumber || 1,
-              PageSize: pageSize || 10,
+              PageSize: pageSize || 12,
             };
 
             // Add filters to API request dynamically (only include if valid)
@@ -323,6 +323,75 @@ export const useDoctorsStore = create(
             pageNumber: 1,
           });
           get().fetchDoctors();
+        },
+
+        /**
+         * Dynamically adjust page size based on grid columns
+         */
+        setPageSize: (size) => {
+          const currentSize = get().pageSize;
+          if (currentSize !== size) {
+            set({ pageSize: size, pageNumber: 1 });
+            get().fetchDoctors();
+          }
+        },
+
+        /**
+         * Advanced Option: Fetch additional items from the next page to fill an incomplete row
+         */
+        fillIncompleteRow: async (missingCount) => {
+          const {
+            pageNumber,
+            pageSize,
+            searchTerm,
+            selectedSpecialties,
+            selectedCities,
+            minRating,
+            priceRange,
+            availableToday,
+            doctors,
+            filteredDoctors,
+            hasNextPage
+          } = get();
+
+          if (!hasNextPage || missingCount <= 0) return;
+
+          try {
+            // Build API parameters to fetch the next page
+            const params = {
+              PageNumber: pageNumber + 1,
+              PageSize: pageSize,
+            };
+
+            if (searchTerm?.trim()) params.SearchTerm = searchTerm.trim();
+            if (Array.isArray(selectedSpecialties) && selectedSpecialties.length > 0) {
+              const specId = parseInt(selectedSpecialties[0], 10);
+              if (!isNaN(specId) && specId > 0) params.Specialty = specId;
+            }
+            if (Array.isArray(selectedCities) && selectedCities.length > 0) {
+              const govId = parseInt(selectedCities[0], 10);
+              if (!isNaN(govId) && govId > 0) params.Governorate = govId;
+            }
+            if (minRating > 0) params.MinRating = minRating;
+            if (priceRange && Array.isArray(priceRange) && priceRange[1] < 1000) params.MaxConsultationFee = priceRange[1];
+
+            console.log('📡 Fetching next page to fill incomplete row...', params);
+            const response = await patientService.getDoctorsList(params);
+
+            if (response.isSuccess && response.data?.data) {
+              // Take only the missing count from the next page
+              const additionalDoctors = response.data.data.slice(0, missingCount);
+              
+              // Append to current state to complete the row
+              set({
+                doctors: [...doctors, ...additionalDoctors],
+                filteredDoctors: [...filteredDoctors, ...additionalDoctors]
+              });
+              console.log(`✅ Filled incomplete row with ${additionalDoctors.length} doctors.`);
+            }
+          } catch (error) {
+            console.error('❌ Error filling incomplete row:', error);
+          }
         },
 
         /**
